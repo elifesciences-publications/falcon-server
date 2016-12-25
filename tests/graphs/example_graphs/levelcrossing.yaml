@@ -1,0 +1,27 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            address: 192.168.3.100
+            port: 26090
+            batch_size: 4
+            update_interval: 5
+            channelmap:
+                tt1: [1,2,3,4]
+    detect:
+        class: LevelCrossingDetector
+        options:
+            threshold: 0.0
+            upslope: true
+            event: threshold_crossing
+            post_detect_block: 320
+
+    sink:
+        class: EventSink
+        options:
+            event: threshold_crossing
+
+connections:
+    - source.tt1=detect.data
+    - detect.events=sink.events
+

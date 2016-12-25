@@ -1,0 +1,28 @@
+drivers are in "Dropbox/Resources/Software/Libraries/DIO card/linux_driver_package_3.2.1.0_64bit.zip"
+
+These are the step-by-step instructions to install the drivers on a Linux Mint/Debian/Ubuntu machine for the DIO card model  USB-4750:
+
+1) Install deb package biokernbase-dkms_3.1.1.0_all.deb from driver_base folder
+2) Install deb package bio4750-dkms_3.1.2.0_all.deb from drivers/usb4750 subfolder
+3) Install deb package libbio4750_3.1.2.0-0_amd64.deb from drivers/usb4750 subfolder
+4) Install deb package libbiodaq_3.1.8.0-0_amd64.deb from SDK/SDK_LIB/ subfolder
+5) Install deb package biodaq-example_3.1.8.0-0_amd64.deb from SDK/EXAMPLE subfolder
+6) Install deb package biodaq-customer-feedback_3.1.6.0-0_amd64.deb from SDK/EXAMPLE subfolder (optional)
+
+
+
+The above  instructions have been adapted from the following instructions released by Advantech (manifacturer of the DIO card)
+
+Installation
+
+Installing device drivers package on Ubuntu
+-------------------------------------------
+(1) Please make sure your system have the latest list of packages. 
+(2) Open a terminal console.Then you can enter the following command to get the lastest list of packages "sudo apt-get update".
+(3) Double click  device's driver deb package, then click install button to install.
+(4) To install deb package in the following order:
+      a. biokernbase-dkms_x.x.x_all.deb
+      b. bioxxxx-dkms_x.x.x_all.deb (example: bio1721-dkms_1.0.0_all.deb)
+      c. libbioxxxx_x.x.x-x_i386.deb (example: libbio1721_1.0.0-0_i386.deb)
+      d. libbiodaq.so_x.x.x-x_i386.deb
+      e. biodaq-demo_x.x.x-x_i386.deb

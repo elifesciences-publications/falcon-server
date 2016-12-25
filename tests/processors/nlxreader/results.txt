@@ -1,0 +1,3 @@
+Unstaged changes after reset:
+M	tests/processors/nlxreader/results.txt
+D	tests/reader/results.txt

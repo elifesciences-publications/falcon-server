@@ -1,0 +1,21 @@
+processors:
+    source(1-2):
+        class: EventSource
+        options:
+            events: [a, b, c]
+            rate: 4.0
+    
+    sync:
+        class: EventSync
+        options:
+            target_event: b
+    
+    sink:
+        class: EventSink
+        options:
+            target_event: b
+
+connections:
+    - source(1-2).events=s:(0-1).p:events.f:sync
+    - sync.events=sink.events
+

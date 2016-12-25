@@ -1,0 +1,102 @@
+processors:
+    source:
+        class: NlxReader
+        advanced:
+            threadcore: 0
+        options:
+            address: 192.168.3.100
+            port: 26090
+            batch_size: 4
+            update_interval: 20
+            channelmap:
+                tt1: [0, 1, 2, 3]
+                tt2: [4, 5, 6, 7]
+                tt3: [8, 9, 10, 11]
+                tt4: [12, 13, 14, 15]
+                tt5: [16, 17, 18, 19]
+                tt6: [20, 21, 22, 23]
+                tt7: [24, 25, 26, 27]
+                tt8: [28, 29, 30, 31]
+
+    filter(1-8):
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/iir_spike/bessel_spike.filter
+
+    spikedetector(1-8):
+        class: SpikeDetector
+        options:
+            threshold: 100.0
+            invert_signal: true
+            peak_lifetime: 6
+            buffer_size: 1 # ms
+
+    mua_estim:
+        class: MUAEstimator
+        options:
+            bin_size_ms: 30
+
+    burst_detector:
+        class: BurstDetector
+        options:
+            threshold_dev: 16
+            smooth_time: 15 # in seconds
+            detection_lockout_time: 400 # [ms]
+            enabled: true
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 0.5 # [sec]
+
+    eventsink:
+        class: EventSink
+        options:
+            event: burst
+            updates_on: true
+    
+    sink_mua:
+        class: FileSerializer
+        options:
+            encoding: yaml           # either yaml or binary
+            format: none          # one of none, full, streamheader, headeronly, compact
+
+    sink_events:
+        class: FileSerializer
+        options:
+            encoding: yaml           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+
+    networksink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech # dummy or advantech
+                port: 0
+                delay: 10
+            enabled: true
+            pulse_width: 400
+            lockout_period: 500 # [ms]
+            protocols:
+                burst:
+                    pulse: [0]
+
+    
+
+connections:
+    - source.tt(1-8)=filter(1-8).data
+    - filter(1-8).data=spikedetector(1-8).data
+    - spikedetector(1-8).spikes=s:(0-7).p:spikes.f:mua_estim
+    - mua_estim.mua=sink_mua.data
+    - mua_estim.mua=burst_detector.mua
+    - burst_detector.events=eventsink.events
+    - burst_detector.events=sink.events
+    - burst_detector.events=sink_events.data
+    - burst_detector.statistics.0=networksink.data
+
+

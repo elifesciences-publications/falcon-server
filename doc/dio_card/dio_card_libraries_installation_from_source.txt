@@ -1,0 +1,23 @@
+1) install necessary packages with
+	sudo apt-get install build-essential linux-headers-$(uname -r)
+
+2) unzip driver source file (replace x.x.x.x with your version) unzip linux_driver_source_x.x.x.x_64bit.zip
+
+3) change directory cd linux_driver_source_x.x.x.x._64bit
+
+4) Install biokernbase driver
+	cd drivers/driver_base/src/lnx_ko && sudo -s make
+
+5) Compile DAQ device driver for USB4750
+	cd ../../../drivers/usb4750/src/lnx_ko && make
+
+6) set up auto loading of DAQ driver
+	sudo mkdir /lib/modules/$(uname -r)/biodaq && cd ../../../ && sudo cp bin/*.ko /lib/modules/$(uname -r)/biodaq/ && sudo depmod
+
+7) using text editor, append "biokernbase" and "bio4750" (without quotes) on separate lines to the end of /etc/modules
+
+8) copy library and include files
+	cd ../libs/ && sudo cp * /usr/lib/
+
+9) copy header-only library
+	cd ../inc/ && sudo cp bdaqctrl.h /usr/include/

@@ -1,0 +1,11 @@
+The test for the nlxreader processor must be carry out as follows:
+
+1) Run falcon with a config file which as nlxreader as source (for example the graph: /home/davide/Dropbox/Davide/falcon_fork1/tests/graphs/example_graphs/nlx.yaml)
+
+2) Set the nlxtestbench to stream from the first NRD file in the subfolder raw_datasets (NLX_data_125_packets.nrd). This is an uncorrupted piece of RAW data: no invalid/missed/duplicated/out-of-order packets should be detected (and no gaps).
+
+3) Set the nlxtestbench to stream from the second NRD file.
+
+4) Report the result in results.txt. Note that in the current version, the nlxreader does not compensate for missed packets or gaps due to the presence of one or more invalid or out-of-order packets. Take that into account when evaluating the successfulness of the test.
+
+5) Repeat the test for all files. Filenames will suggest you the number of invalid/missed/duplicated/out-of-order packets/gaps you should expect.

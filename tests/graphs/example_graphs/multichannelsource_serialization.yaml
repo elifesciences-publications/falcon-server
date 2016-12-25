@@ -1,0 +1,21 @@
+processors:
+    source:
+        class: MultichannelDataFileStreamer
+        options:
+            filepath : repo://tests/processors/multichanneldatafilestreamer/random_data.npy
+            sample_rate : 4500
+            streaming_rate : 100
+            batch_size: 20
+            initial_timestamp : 2000
+    
+    sink:
+        class: FileSerializer
+        options:
+            encoding: binary           # either yaml or binary
+            format: compact          # one of none, full, streamheader, headeronly, compact
+            throttle: false           # whether or not packets should be dropped if we cannot keep up
+
+connections:
+    - source.data=sink.data
+
+

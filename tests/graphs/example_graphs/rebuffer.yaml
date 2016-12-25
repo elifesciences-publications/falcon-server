@@ -1,0 +1,23 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 10
+            update_interval: 0
+            channelmap:
+                tt1: [1,2,3,4]
+                tt2: [5,6,7,8]
+    
+    filter:
+        class: Rebuffer
+        options:
+            buffer_size: 5
+            downsample: 20
+            buffer_unit: samples
+    
+    sink(1-2):
+        class: DummySink
+
+connections:
+    - source.tt(1-2)=p:data.s:(0-1).f:filter
+    - filter.data.(0-1)=p:data.s:0.f:sink(1-2)

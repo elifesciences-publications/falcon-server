@@ -1,0 +1,24 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [open_loop_stim]
+            rate: 1.0
+
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech
+                port: 0
+                delay: 20
+            enabled: true
+            pulse_width: 400
+            lockout_period: 0 # [ms]
+            protocols:
+                open_loop_stim:
+                    pulse: [0]
+
+connections:
+    - source.events=sink.events
+

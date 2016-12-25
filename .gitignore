@@ -1,0 +1,11 @@
+build/
+nbproject/
+*.gch
+*.orig
+*.o
+*.pyc
+#Eclipse IDE file
+.cproject
+.project
+.settings/
+#-------

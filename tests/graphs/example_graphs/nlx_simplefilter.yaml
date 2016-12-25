@@ -1,0 +1,22 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 1
+            update_interval: 0
+            npackets: 1000000
+            channelmap:
+                tt1: [1,2,3,4]
+                tt2: [5,6,7,8]
+    filter(1-2):
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/butter_lpf_0.1fs.filter
+    sink(1-2):
+        class: DummySink
+
+connections:
+    - source.tt(1-2)=p:data.f:filter(1-2)
+    - filter(1-2).data=sink(1-2).data
+

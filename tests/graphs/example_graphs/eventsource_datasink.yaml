@@ -1,0 +1,27 @@
+processors:
+    source1:
+        class: EventSource
+        options:
+            events: [dummy, dummy2, dummy3]
+            rate: 1
+            busy_spin: true
+
+    source2:
+        class: EventSource
+        options:
+            events: [a, b, c]
+            rate: 50
+            busy_spin: true
+
+    sink(1-2):
+        class: FileSerializer
+        options:
+            encoding: yaml           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+            throttle: false           # whether or not packets should be dropped if we cannot keep up
+
+connections:
+    - source1.events.0=sink1.data
+    - source2.events.0=sink2.data
+
+

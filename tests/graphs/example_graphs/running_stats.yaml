@@ -1,0 +1,18 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 10
+            channelmap:
+                tt1: [1,2,3,4]
+
+    sink:
+        class: RunningStats
+        options:
+            integration_time: 1
+            outlier_protection: true
+            outlier_zscore: 3
+            outlier_half_life: 2
+
+connections:
+    - source.tt1=sink.data

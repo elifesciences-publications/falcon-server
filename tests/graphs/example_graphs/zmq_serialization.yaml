@@ -1,0 +1,16 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [event1, event2, event3]
+            rate: 2
+    
+    sink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+            port: 7777
+
+connections:
+    - source.events=sink.data

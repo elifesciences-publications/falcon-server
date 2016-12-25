@@ -1,0 +1,10 @@
+processors:
+    source:
+        class: TestSourceMulti
+        options:
+            npackets: 7
+    sink:
+        class: TestSinkMulti
+
+connections:
+    - source=sink

@@ -1,0 +1,63 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 10
+            update_interval: 5
+            npackets: 44800     # 1.4 s
+            channelmap:
+                tt10: [36,37,38,39]
+
+    filter1:
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/iir_spike/bessel_spike.filter
+
+    spikedetector1:
+        class: SpikeDetector
+        options:
+            threshold: 50.0
+            invert_signal: true
+            peak_lifetime: 10
+            buffer_size: 200.0
+            strict_time_bin_check: true
+    
+    sink(1-2):
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: compact      # one of none, full, streamheader, headeronly, compact
+            throttle: false           # whether or not packets should be dropped if we cannot keep up
+
+    sink3:
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: full           # one of none, full, streamheader, headeronly, compact
+            throttle: false        # whether or not packets should be dropped if we cannot keep up
+
+    sink4:
+        class: FileSerializer
+        options:
+            encoding: YAML
+            format: compact           # one of none, full, streamheader, headeronly, compact
+            throttle: false        # whether or not packets should be dropped if we cannot keep up
+
+    sink5:
+        class: FileSerializer
+        options:
+            encoding: YAML
+            format: full           # one of none, full, streamheader, headeronly, compact
+            throttle: false        # whether or not packets should be dropped if we cannot keep up
+
+connections:
+    - source.tt10.0=filter1.data.0
+    - filter1.data.0=spikedetector1.data
+    - source.tt10.0=sink1.data
+    - filter1.data.0=sink2.data
+    - spikedetector1.spikes=sink3.data
+    - spikedetector1.events=sink4.data
+    - spikedetector1.spikes.0=sink5.data.0
+
+

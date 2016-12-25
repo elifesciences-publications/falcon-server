@@ -1,0 +1,15 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [a, b, c]
+            rate: 1.0
+
+    sink:
+        class: EventSink
+        options:
+            target_event: b
+
+connections:
+    - source.events=sink.events
+

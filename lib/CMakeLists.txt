@@ -1,0 +1,6 @@
+add_subdirectory( dsp )
+add_subdirectory( loggers )
+add_subdirectory( utilities )
+add_subdirectory( neuralynx )
+add_subdirectory( dio )
+add_subdirectory( npyreader )

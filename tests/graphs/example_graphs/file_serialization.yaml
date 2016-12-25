@@ -1,0 +1,41 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 10
+            channelmap:
+                tt1: [1,2,3,4]
+                tt2: [5,6,7,8]
+        advanced:
+            buffer_sizes:
+                tt1: 500
+                tt2: 500
+    
+    events:
+        class: EventSource
+        options:
+            events: [a, b, c]
+            rate: 10
+    
+    sink:
+        class: FileSerializer
+        options:
+            encoding: YAML           # either yaml or binary
+            format: compact          # one of none, full, streamheader, headeronly, compact
+            throttle: true           # whether or not packets should be dropped if we cannot keep up
+            throttle_smooth: 0.5     # [0-1] higher values apply less smoothing
+            throttle_threshold: 0.3  # [0-1] ringbuffer fill fraction at which throttling kicks in
+    
+    sink2:
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: compact
+            throttle: false
+
+connections:
+    - events.events=sink.data
+    - source.tt1=sink.data
+    - source.tt2=sink2.data
+
+

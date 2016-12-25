@@ -1,0 +1,19 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 5
+            update_interval: 5
+            npackets: 32000
+            channelmap:
+                tt1: [1,2,3,4]
+    sink:
+        class: FileSerializer
+        options:
+            encoding: binary          # either yaml or binary
+            format: compact      # one of none, full, streamheader, header, compact
+            throttle: false           # whether or not packets should be dropped if we cannot keep up
+
+connections:
+    - source.tt1=sink.data
+

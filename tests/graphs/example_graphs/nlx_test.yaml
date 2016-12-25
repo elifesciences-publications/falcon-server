@@ -1,0 +1,15 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 1
+            update_interval: 0
+            npackets: 125
+            channelmap:
+                tt1: [1,2,3,4]
+    sink:
+        class: DummySink
+
+connections:
+    - source.tt1=p:data.f:sink
+

@@ -1,0 +1,21 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 1
+            update_interval: 0
+            npackets: 1000000
+            channelmap:
+                tt1: [1,2,3,4]
+                tt2: [5,6,7,8]
+        advanced:
+            threadpriority: 100
+            threadcore: 4
+    sink(1-2):
+        class: DummySink
+
+connections:
+    - source.tt(1-2)=p:data.f:sink(1-2)
+
+states:
+    - [sink1.tickle, sink2.tickle]

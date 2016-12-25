@@ -1,0 +1,24 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [foo]
+            rate: 4
+    
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: dummy # dummy or advantech
+                port: 0
+                delay: 10
+            enabled: true
+            pulse_width: 400
+            lockout_period: 2000 # [ms]
+            enable_saving: false
+            protocols:
+                foo:
+                    pulse: [0]
+
+connections:
+    - source.events=sink.events

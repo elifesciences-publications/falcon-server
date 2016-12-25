@@ -1,0 +1,50 @@
+processors:
+    source:
+        class: MultichannelDataSource
+        options:
+            filepath : repo://tests/processors/spikedetector/test_data/real_spikes_1.4s_1TT.npy
+            sample_rate : 32000
+            streaming_rate : 900
+            batch_size: 4
+            initial_timestamp : 2000
+
+    spikedetector1:
+        class: SpikeDetector
+        options:
+            threshold: 50.0
+            invert_signal: true    # whether the signal does (true) or does not (false) need to be inverted
+            peak_lifetime: 10
+            buffer_size: 200        # amount of data that will be used to look for spikes [ms]
+            strict_time_bin_check: true
+    
+    sink1:
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: full            # one of none, full, streamheader, headeronly, compact
+            throttle: false           # whether or not packets should be dropped if we cannot keep up
+
+    sink2:
+        class: FileSerializer
+        options:
+            encoding: YAML
+            format: full           # one of none, full, streamheader, headeronly, compact
+            throttle: false        # whether or not packets should be dropped if we cannot keep up
+
+    sink3:
+        class: FileSerializer
+        options:
+            encoding: YAML
+            format: compact           # one of none, full, streamheader, headeronly, compact
+            throttle: false        # whether or not packets should be dropped if we cannot keep up
+
+    
+connections:
+    - source.data=spikedetector1.data
+    - source.data.0=sink3.data.0
+    - spikedetector1.spikes=sink1.data
+    - spikedetector1.events=sink2.data
+
+
+
+

@@ -1,0 +1,85 @@
+processors:
+    source(1-2):
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/processors/spikestreamer/test_spike_amplitudes.npy
+            path_to_spike_times: repo://tests/processors/spikestreamer/test_spike_times.npy
+            path_to_initial_times: repo://tests/processors/spikestreamer/test_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 10.0
+            sample_rate: 32000
+            streaming_rate: 20
+
+    mua_estim:
+        class: MUAEstimator
+        options:
+            bin_size_ms: 20.0
+
+    burst_detector:
+        class: BurstDetector
+        options:
+            threshold: 8
+            smooth_time: 0.5 # in seconds
+            detection_lockout_time: 100 # [ms]
+            enabled: true
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 0.5 # [sec]
+
+    eventsink:
+        class: EventSink
+        options:
+            event: burst
+            updates_on: true
+
+    sink_spikes:
+        class: FileSerializer
+        options:
+            encoding: yaml           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+    
+    sink_mua:
+        class: FileSerializer
+        options:
+            encoding: yaml           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+
+    sink_events:
+        class: FileSerializer
+        options:
+            encoding: yaml           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+
+    networksink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: dummy # dummy or advantech
+                port: 0
+                delay: 10
+            enabled: true
+            pulse_width: 400
+            lockout_period: 0 # [ms]
+            protocols:
+                burst:
+                    pulse: [0]
+
+    
+
+connections:
+    - source(1-2).spikes=s:(0-1).p:spikes.f:mua_estim
+    - source1.spikes=sink_spikes.data
+    - mua_estim.mua=sink_mua.data
+    - mua_estim.mua=burst_detector.mua
+    - burst_detector.events=eventsink.events
+    - burst_detector.events=sink.events
+    - burst_detector.events=sink_events.data
+    - burst_detector.statistics.0=networksink.data
+
+

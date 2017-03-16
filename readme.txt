@@ -23,7 +23,6 @@ g3log
 cppzmq (header only library)
 cmdline (header only library)
 disruptor
-yaml-cpp
 
 
 External libraries not included in source tree

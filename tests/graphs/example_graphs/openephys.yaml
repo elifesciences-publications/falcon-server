@@ -1,0 +1,21 @@
+processors:
+    source:
+        class: OpenEphysReader
+        options:
+            batch_size: 60
+            update_interval: 5
+            npackets: 0
+            channelmap:
+                tt1: [0,1,2,3]
+                tt2: [4,5,6,7]
+                tt3: [8,9,10,11]
+                tt4: [12,13,14,15]
+    sink(1-4):
+        class: FileSerializer
+        options:
+            encoding: yaml
+            format: compact
+
+connections:
+    - source.tt(1-4)=p:data.f:sink(1-4)
+

@@ -36,6 +36,8 @@
 #include "spikestreamer.hpp"
 #include "muaestimator.hpp"
 #include "burstdetector.hpp"
+#include "openephysreader.hpp"
+#include "serialoutput.hpp"
 
 void registerProcessors() {
     
@@ -56,5 +58,7 @@ void registerProcessors() {
     REGISTERPROCESSOR(SpikeStreamer)
     REGISTERPROCESSOR(MUAEstimator)
     REGISTERPROCESSOR(BurstDetector)
+    REGISTERPROCESSOR(OpenEphysReader)
+    REGISTERPROCESSOR(SerialOutput)
 }
 

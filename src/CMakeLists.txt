@@ -49,6 +49,9 @@ LIST(APPEND sources
     "processors/spikestreamer"
     "processors/muaestimator.cpp"
     "processors/burstdetector.cpp"
+    "processors/openephysreader.cpp"
+    "processors/serialoutput.cpp"
+    "processors/rippledetector.cpp"
 )
 
 include_directories( "../ext" )

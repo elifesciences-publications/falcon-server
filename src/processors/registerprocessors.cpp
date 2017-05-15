@@ -38,6 +38,7 @@
 #include "burstdetector.hpp"
 #include "openephysreader.hpp"
 #include "serialoutput.hpp"
+#include "rippledetector.hpp"
 
 void registerProcessors() {
     
@@ -60,5 +61,6 @@ void registerProcessors() {
     REGISTERPROCESSOR(BurstDetector)
     REGISTERPROCESSOR(OpenEphysReader)
     REGISTERPROCESSOR(SerialOutput)
+    REGISTERPROCESSOR(RippleDetector)
 }
 

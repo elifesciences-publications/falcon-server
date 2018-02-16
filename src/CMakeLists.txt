@@ -3,7 +3,7 @@ ENABLE_LANGUAGE(CXX)
 
 project (falcon)
 
-set(PLATFORM_LINK_LIBRARIES rt)
+set(PLATFORM_LINK_LIBRARIES rt dl)
 
 add_definitions(-DG2_DYNAMIC_LOGGING)
 
@@ -58,4 +58,4 @@ include_directories( "../ext" )
 include_directories( "../lib" )
 
 add_executable(falcon ${sources})
-target_link_libraries (falcon logging loggers disruptor zmq utilities dsp dio neuralynx npyreader ${YAMLCPP_LIBRARY} ${PLATFORM_LINK_LIBRARIES})
+target_link_libraries (falcon logging loggers disruptor zmq utilities dsp dio neuralynx npyreader openephys arduino-serial ${YAMLCPP_LIBRARY} ${PLATFORM_LINK_LIBRARIES})

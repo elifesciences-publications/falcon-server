@@ -202,7 +202,7 @@ void NlxReader::Process( ProcessingContext& context ) {
                 test_source_timestamps_[valid_packet_counter_] = Clock::now();
             }
             
-            int recvlen = recvfrom(udp_socket_, buffer_, UDP_BUFFER_SIZE, 0, NULL, NULL);
+            int recvlen = recvfrom(udp_socket_, buffer_, NLX_PACKETBYTESIZE(nchannels_), 0, NULL, NULL);
             
             if (!CheckPacket( buffer_, recvlen )) { continue; }
             

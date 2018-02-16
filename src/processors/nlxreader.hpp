@@ -36,7 +36,6 @@
  * options:
  * address <string> - IP address of Digilynx system
  * port <unsigned int> - port of Digilynx system
- * nchannels <unsigned int> - number of channels in Digilynx system
  * batch_size <unsigned int> - how many samples to pack into single
  *   MultiChannelData bucket
  * npackets <uint64_t> - number of raw data packets to read before
@@ -110,9 +109,8 @@ protected:
     void print_stats( bool condition = true );
     
 public:
-    static constexpr uint16_t MAX_NCHANNELS = 128;
-    static constexpr decltype(MAX_NCHANNELS) UDP_BUFFER_SIZE =
-        NLX_PACKETBYTESIZE(MAX_NCHANNELS);
+    static constexpr decltype(NLX_DEFAULT_NCHANNELS) UDP_BUFFER_SIZE =
+        NLX_PACKETBYTESIZE(NLX_DEFAULT_NCHANNELS);
     
 // config options
 protected:
@@ -121,7 +119,6 @@ protected:
     unsigned int port_;
     std::uint64_t npackets_;
     unsigned int batch_size_;
-    unsigned int nchannels_;
 
 // internals
 protected:
@@ -160,7 +157,6 @@ public:
     const decltype(port_) DEFAULT_PORT = 5000;
     const decltype(npackets_) DEFAULT_NPACKETS = 0;
     const decltype(batch_size_) DEFAULT_BATCHSIZE = 1;
-    const decltype(nchannels_) DEFAULT_NCHANNELS = 128;
     const decltype(update_interval_) DEFAULT_UPDATE_INTERVAL_SEC = 20;
     const decltype(hardware_trigger_) DEFAULT_HARDWARE_TRIGGER = false;
     const decltype(hardware_trigger_channel_) DEFAULT_HARDWARE_TRIGGER_CHANNEL = 0;

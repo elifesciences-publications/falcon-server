@@ -24,8 +24,7 @@
 #include <limits>
 #include <chrono>
 
-constexpr uint16_t NlxReader::MAX_NCHANNELS;
-constexpr decltype(NlxReader::MAX_NCHANNELS) NlxReader::UDP_BUFFER_SIZE;
+constexpr decltype(NLX_DEFAULT_NCHANNELS) NlxReader::UDP_BUFFER_SIZE;
 constexpr decltype(NLX_SIGNAL_SAMPLING_FREQUENCY) NlxReader::SAMPLING_PERIOD_MICROSEC;
 constexpr decltype(NlxReader::delta_) NlxReader::MAX_ALLOWABLE_TIMEGAP_MICROSECONDS;
 constexpr decltype(NlxReader::timestamp_) NlxReader::INVALID_TIMESTAMP;
@@ -43,7 +42,7 @@ bool NlxReader::CheckPacket(char * buffer, int recvlen) {
     
     if (!nlxrecord_.FromNetworkBuffer( buffer_, recvlen )) {
         ++stats_.n_invalid;
-        LOG(INFO) << name() << ": Received invalid record.";
+        LOG(WARNING) << name() << ": Received invalid record.";
         return false;
     }
     
@@ -110,10 +109,6 @@ void NlxReader::Configure( const YAML::Node & node, const GlobalContext& context
     // how many packets to pack into single multi-channel data bucket
     batch_size_ = node["batch_size"].as<decltype(batch_size_)>(DEFAULT_BATCHSIZE);
     
-    // number of AD channels of the system
-    nchannels_ = node["nchannels"].as<decltype(nchannels_)>(DEFAULT_NCHANNELS);
-    nlxrecord_.set_nchannels( nchannels_ );
-    
     // how often updates about data stream will be sent out
     decltype(update_interval_) value = node["update_interval"].as<decltype(
         update_interval_)>(DEFAULT_UPDATE_INTERVAL_SEC);
@@ -139,6 +134,8 @@ void NlxReader::Prepare( GlobalContext& context ) {
     server_addr_.sin_family = AF_INET;
     server_addr_.sin_addr.s_addr = inet_addr(address_.c_str());
     server_addr_.sin_port = htons(port_);
+    
+    nlxrecord_.set_nchannels( NLX_DEFAULT_NCHANNELS );
 }
 
 void NlxReader::Preprocess( ProcessingContext& context ) {

@@ -114,6 +114,8 @@ void NlxReader::Configure( const YAML::Node & node, const GlobalContext& context
     nchannels_ = node["nchannels"].as<decltype(nchannels_)>(DEFAULT_NCHANNELS);
     nlxrecord_.set_nchannels( nchannels_ );
     
+    LOG(INFO) << name() << ". Number of channels set to " << nchannels_; 
+    
     // how often updates about data stream will be sent out
     decltype(update_interval_) value = node["update_interval"].as<decltype(
         update_interval_)>(DEFAULT_UPDATE_INTERVAL_SEC);

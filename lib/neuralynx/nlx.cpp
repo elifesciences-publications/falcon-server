@@ -84,10 +84,11 @@ bool NlxSignalRecord::FromNetworkBuffer( char * buffer, size_t n ) {
 		}
     
     // perform ntoh conversion, copying into local buffer in the process
-    char * p = (char*) buffer_.data();
+    /*char * p = (char*) buffer_.data();
     for ( unsigned int k=0; k<n; k+=2 ) {
         *((uint16_t*) (p+k)) = ntohs( *((uint16_t*) (buffer+k)) );
     }
+    */
     
     // test if valid record (record size os OK, first 3 fields are OK, CRC checks out)
     return valid();

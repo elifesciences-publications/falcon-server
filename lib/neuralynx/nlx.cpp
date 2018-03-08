@@ -152,29 +152,23 @@ bool NlxSignalRecord::finalized() {
     
 bool NlxSignalRecord::valid() {
     
-    if (buffer_[NLX_FIELD_STX] != NLX_STX ||
-		buffer_[NLX_FIELD_RAWPACKETID] != NLX_RAWPACKETID ||
-		buffer_[NLX_FIELD_PACKETSIZE] != nlx_packetsize_) {
+    if (buffer_[NLX_FIELD_STX] != NLX_STX || 
+        buffer_[NLX_FIELD_RAWPACKETID] != NLX_RAWPACKETID || 
+        buffer_[NLX_FIELD_PACKETSIZE] != nlx_packetsize_) {
     
-		initialized_ = true;
-		finalized_ = true;
-    
-		return false;
-	}
-	
-	if (buffer_[NLX_FIELD_PACKETSIZE] != nlx_packetsize_) {
-		 
-		initialized_ = false;
+        initialized_ = false;
         return false;
-	}
-	
-	if (buffer_[nlx_field_crc_] != crc()) {
-		
-		finalized_ = false;
-		return false;
     }
-	
-	return true;
+    
+    if (buffer_[nlx_field_crc_] != crc()) {
+        finalized_ = false;
+        return false;
+    }
+    
+    initialized_ = true;
+    finalized_ = true;
+    
+    return true;
 }
     
 uint64_t NlxSignalRecord::timestamp() {

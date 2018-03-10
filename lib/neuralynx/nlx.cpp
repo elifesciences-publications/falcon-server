@@ -72,22 +72,28 @@ void NlxSignalRecord::set_nchannels( unsigned int n ) {
     Initialize();
 }
     
-bool NlxSignalRecord::FromNetworkBuffer( char * buffer, size_t n ) {
+bool NlxSignalRecord::FromNetworkBuffer( char * buffer, size_t n, bool use_nthos_conv ) {
     
     // check size
-    if (n!=nlx_packetbytesize_) { return false; }
+    if (n!=nlx_packetbytesize_) {return false;}
     
     // perform ntoh conversion, copying into local buffer in the process
     char * p = (char*) buffer_.data();
-    for ( unsigned int k=0; k<n; k+=2 ) {
-        *((uint16_t*) (p+k)) = ntohs( *((uint16_t*) (buffer+k)) );
-    }
+    if (use_nthos_conv) {
+		for ( unsigned int k=0; k<n; k+=2 ) {
+			*((uint16_t*) (p+k)) = ntohs( *((uint16_t*) (buffer+k)) );
+		}
+	} else {
+		for ( unsigned int k=0; k<n; k+=2 ) {
+			*((uint16_t*) (p+k)) = *((uint16_t*) (buffer+k));
+		}
+	}
     
     // test if valid record (record size os OK, first 3 fields are OK, CRC checks out)
     return valid();
 }
     
-size_t NlxSignalRecord::ToNetworkBuffer( char * buffer, size_t n ) {
+size_t NlxSignalRecord::ToNetworkBuffer( char * buffer, size_t n, bool use_htons_conv ) {
     
     // check size
     if (n<nlx_packetbytesize_) { return 0; }
@@ -97,9 +103,15 @@ size_t NlxSignalRecord::ToNetworkBuffer( char * buffer, size_t n ) {
     
     // perform hton conversion, copying into provided buffer in the process
     char * p = (char*) buffer_.data();
-    for ( unsigned int k=0; k<nlx_packetbytesize_; k+=2 ) {
-        *((uint16_t*) (buffer+k)) = htons( *((uint16_t*) (p+k)) );
-    }
+    if (use_htons_conv) {
+		for ( unsigned int k=0; k<nlx_packetbytesize_; k+=2 ) {
+			*((uint16_t*) (buffer+k)) = htons( *((uint16_t*) (p+k)) );
+		}
+	} else {
+		for ( unsigned int k=0; k<nlx_packetbytesize_; k+=2 ) {
+			*((uint16_t*) (buffer+k)) = *((uint16_t*) (p+k));
+		}
+	}
     
     return nlx_packetbytesize_;
 }

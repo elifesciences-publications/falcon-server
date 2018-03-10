@@ -130,8 +130,8 @@ public:
     unsigned int nchannels();
     void set_nchannels( unsigned int n );
     
-    bool FromNetworkBuffer( char * buffer, size_t n );
-    size_t ToNetworkBuffer( char * buffer, size_t n );
+    bool FromNetworkBuffer( char * buffer, size_t n, bool use_nthos_conv=true );
+    size_t ToNetworkBuffer( char * buffer, size_t n, bool use_htons_conv=true  );
     
     void Initialize(); // set required fields 1-3
     void Finalize(); // compute CRC

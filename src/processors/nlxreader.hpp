@@ -37,6 +37,8 @@
  * address <string> - IP address of Digilynx system
  * port <unsigned int> - port of Digilynx system
  * nchannels <unsigned int> - number of channels in Digilynx system
+ * use_nthos_conv <bool> - converts from network byte order to
+ * host byte order (required on new Neuralynx firmware release). 
  * batch_size <unsigned int> - how many samples to pack into single
  *   MultiChannelData bucket
  * npackets <uint64_t> - number of raw data packets to read before
@@ -122,6 +124,7 @@ protected:
     std::uint64_t npackets_;
     unsigned int batch_size_;
     unsigned int nchannels_;
+    bool use_nthos_conv_;
 
 // internals
 protected:
@@ -161,6 +164,7 @@ public:
     const decltype(npackets_) DEFAULT_NPACKETS = 0;
     const decltype(batch_size_) DEFAULT_BATCHSIZE = 1;
     const decltype(nchannels_) DEFAULT_NCHANNELS = 128;
+    const decltype(use_nthos_conv_) DEFAULT_CONVERT_BYTE_ORDER = true;
     const decltype(update_interval_) DEFAULT_UPDATE_INTERVAL_SEC = 20;
     const decltype(hardware_trigger_) DEFAULT_HARDWARE_TRIGGER = false;
     const decltype(hardware_trigger_channel_) DEFAULT_HARDWARE_TRIGGER_CHANNEL = 0;

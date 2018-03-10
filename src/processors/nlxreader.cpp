@@ -41,7 +41,7 @@ void NlxReaderStats::clear_stats() {
 
 bool NlxReader::CheckPacket(char * buffer, int recvlen) {
     
-    if (!nlxrecord_.FromNetworkBuffer( buffer_, recvlen )) {
+    if (!nlxrecord_.FromNetworkBuffer( buffer_, recvlen, use_nthos_conv_ )) {
         ++stats_.n_invalid;
         LOG(INFO) << name() << ": Received invalid record.";
         return false;
@@ -113,6 +113,11 @@ void NlxReader::Configure( const YAML::Node & node, const GlobalContext& context
     // number of AD channels of the system
     nchannels_ = node["nchannels"].as<decltype(nchannels_)>(DEFAULT_NCHANNELS);
     nlxrecord_.set_nchannels( nchannels_ );
+    
+    LOG(INFO) << name() << ". Number of channels set to " << nchannels_; 
+    
+    // if the network byte order should be converted to host byte order
+    use_nthos_conv_ = node["convert_byte_order"].as<bool>( DEFAULT_CONVERT_BYTE_ORDER );
     
     // how often updates about data stream will be sent out
     decltype(update_interval_) value = node["update_interval"].as<decltype(

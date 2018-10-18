@@ -137,6 +137,7 @@ void LevelCrossingDetector::Process( ProcessingContext& context ) {
                 
                 data_out_->set_source_timestamp( data_in_->source_timestamp() );
                 data_out_->set_hardware_timestamp( data_in_->sample_timestamp( s ) );
+                data_out_->set_serial_number( data_in_->serial_number() );
                 
                 data_out_->set_event( event_prototype_ );
                 data_out_port_->slot(0)->PublishData();

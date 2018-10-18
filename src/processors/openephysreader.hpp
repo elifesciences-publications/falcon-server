@@ -82,7 +82,7 @@
 class OpenEphysReader : public IProcessor  {
     
 public:
-    OpenEphysReader() : IProcessor( PRIORITY_HIGH ) {};
+    OpenEphysReader() : IProcessor( PRIORITY_MAX ) {};
     
     virtual void Configure( const YAML::Node  & node, const GlobalContext& context ) override;
     virtual void CreatePorts() override;

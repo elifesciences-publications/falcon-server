@@ -71,9 +71,12 @@ protected:
     int initial_lockout_period_ms_;
     ReadableState<decltype(initial_lockout_period_ms_)>* lockout_period_ms_; 
     
+    char default_message_;
+    ReadableState<decltype(default_message_)>* message_; ;
+    
     bool save_stim_events_;
     
-    std::string message_;
+    
     std::string port_address_;
     EventData target_event_;
     int baudrate_;
@@ -94,7 +97,7 @@ public:
     const decltype(initial_lockout_period_ms_) DEFAULT_LOCKOUT_PERIOD_MS = 50;
     const decltype(save_stim_events_) DEFAULT_SAVE_STIM_EVENTS = false;
     const decltype(baudrate_) DEFAULT_BAUDRATE = 9600;
-    const std::string DEFAULT_MESSAGE = "1";
+    const decltype(default_message_) DEFAULT_MESSAGE = '1';
     const std::string DEFAULT_PORT_ADDRESS = "/dev/ttyACM0";
     
 protected:

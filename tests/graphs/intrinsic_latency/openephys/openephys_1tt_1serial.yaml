@@ -1,0 +1,61 @@
+processors:
+    source:
+        class: OpenEphysReader
+        advanced:
+            threadcore: 0
+        options:
+            #batch_size: 60
+            update_interval: 15
+            npackets: 0
+            channelmap:
+                tt1: [0,1,2.3]
+                
+    dummyprocessor1:
+        class: LevelCrossingDetector
+        options:
+            event: rising_edge
+            threshold: 6500
+            upslope: true
+            post_detect_block: 10
+    
+    datasink_ev:
+        class: FileSerializer
+        options:
+            encoding: yaml
+            format: full
+
+#    eventsink:
+#        class: EventSink
+#        options:
+#            target_event: rising_edge
+            
+    datasink_mcd:
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: compact
+            throttle: true
+
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech # dummy or advantech
+                port: 0
+                delay: 10
+            enabled: true
+            pulse_width: 200
+            enable_saving: false # save serial numbers
+            lockout_period: 0 # [ms]
+            protocols:
+                rising_edge:
+                    pulse: [0]
+            print_protocol_execution_updates: false
+
+connections:
+    - source.tt1=dummyprocessor1.data
+    - dummyprocessor1.events=sink.events
+    - dummyprocessor1.events=datasink_ev.data
+    - source.tt1=datasink_mcd.data
+#    - dummyprocessor1.events=eventsink.events
+

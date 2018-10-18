@@ -187,6 +187,9 @@ void SpikeDetector::Process( ProcessingContext& context ) {
 void SpikeDetector::Postprocess( ProcessingContext& context ) {
     
     LOG(INFO) << name() << ". # spikes detected = " << spike_detector_->nspikes();
+    auto spike_rate = spike_detector_->nspikes() /
+        (data_out_port_spikes_->slot(0)->nitems_produced()*buffer_size_ms_/1e3);
+    LOG(INFO) << name() << ". Spike rate = " << spike_rate << " spikes/s.";
     spike_detector_->reset();
 }
 

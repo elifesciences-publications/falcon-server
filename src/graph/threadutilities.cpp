@@ -23,7 +23,7 @@
 
 bool set_realtime_priority( pthread_t thread, ThreadPriority priority ) {
     
-    if (priority<PRIORITY_LOW) {
+    if (priority<PRIORITY_MIN) {
         return true;
     }
     

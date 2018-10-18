@@ -1,0 +1,67 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 3
+            npackets: 64000
+            update_interval: 5
+            channelmap:
+                tt1: [1, 2, 64, 65]
+
+    antialias_filter:
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/iir_antialiasing/cheby2_antialiasing_32kHz.filter
+
+    downsampler:
+        class: Rebuffer
+        options:
+            downsample_factor: 8
+            buffer_size: 1
+            buffer_unit: samples
+
+    ripple_filter:
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/iir_ripple/ellip_ripple_4kHz.filter
+
+    rippledetector:
+        class: RippleDetector
+        options:
+            threshold_dev: 6
+            smooth_time: 0.001 # in seconds
+            detection_lockout_time_ms: 80
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 0.05 # [s]
+            statistics_downsample_factor: 1
+
+    eventsink:
+        class: EventSink
+        options:
+            target_event: ripple
+
+    zmqsink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+
+    datasink(1-2):
+        class: FileSerializer
+        options:
+            encoding: yaml
+            format: full
+            throttle: false
+
+connections:
+    - source.tt1=antialias_filter.data
+    - antialias_filter.data=downsampler.data
+    - downsampler.data=ripple_filter.data
+    - ripple_filter.data=rippledetector.data
+    - rippledetector.events=eventsink.events
+    - rippledetector.statistics=zmqsink.data
+    - ripple_filter.data.0=datasink1.data
+    - rippledetector.statistics.0=datasink2.data

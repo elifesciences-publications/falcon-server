@@ -16,3 +16,5 @@ set(SRC_FILES ${SRC_FILES})
 
 add_library( logging ${SRC_FILES})
 
+# cnpy library
+add_library( cnpy cnpy/cnpy.cpp )

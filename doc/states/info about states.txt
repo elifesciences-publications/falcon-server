@@ -1,0 +1,20 @@
+for each state there are 3 permissions: self, other and external
+if self=Read, then that means that the processor that owns the state will only be able to read the state value
+if other=Read, then that means that states owned by other processors are not allowed to write the state value (of course this only takes effect when the two states are shared/connected)
+Two states can only be connected when their self and other permissions are compatible. If we have two states, A and B, then they cannot be connected if: (A.other==Read && B.self!=Read) || (B.other==Read && A.self!=Read). Here is the full table:state A self | state A other | state B self | state B other
+R | R | R | R -> OK
+R | R | R | W -> OK
+R | R | W | R -> not OK: state B can write the value, but state A does not allow others to write
+R | R | W | W -> not OK: state B can write the value, but state A does not allow others to write
+R | W | R | R -> OK
+R | W | R | W -> OK
+R | W | W | R -> OK
+R | W | W | W -> OK
+W | R | R | R -> not OK: state A can write the value, but state B does not allow others to write
+W | R | R | W -> OK
+W | R | W | R -> not OK: state A can write the value, but state B does not allow others to write. And vice versa: state B can write, but state A doesn't allow others to write
+W | R | W | W -> not OK: state B can write the value, but state A does not allow others to write
+W | W | R | R -> not OK: state A can write the value, but state B does not allow others to write
+W | W | R | W -> OK
+W | W | W | R -> not OK: state A can write the value, but state B does not allow others to write
+R | W | W | W -> OK

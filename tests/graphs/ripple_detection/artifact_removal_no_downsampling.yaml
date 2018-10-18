@@ -1,0 +1,96 @@
+processors:
+    source:
+        class: NlxReader
+        advanced:
+            threadpriority: 100
+            threadcore: 0
+        options:
+            address: "192.168.3.100"
+            port: 26090
+            batch_size: 3
+            update_interval: 10
+            channelmap:
+                hp1: [4, 12, 24] #8, 12, 20, 24
+                cx1: [16]
+
+    ripple_filter(1-2):
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/elliptic_rippleband.filter
+
+    rippledetector:
+        class: RippleDetector
+        options:
+            threshold_dev: 15
+            smooth_time: 8 # in seconds
+            detection_lockout_time_ms: 60 #ms
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 1.0 # sec
+            statistics_downsample_factor: 4
+
+    rippledetector_ref:
+        class: RippleDetector
+        options:
+            threshold_dev: 20
+            smooth_time: 12 # in seconds
+            detection_lockout_time_ms: 60 #ms
+            stream_events: true
+            stream_statistics: false
+            statistics_buffer_size: 1.0 # sec
+            statistics_downsample_factor: 4
+
+    eventfilter:
+        class: EventFilter
+        options:
+            target_event: ripple
+            blockout_time_ms: 40
+            synch_time_ms: 2.5
+            time_in_ms: 4 # below 3.5, asynch can occur
+            detection_criterion: "any" # 'any', 'all' or number
+            discard_warnings: false
+
+    networksink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+
+    eventsink:
+        class: EventSink
+        options:
+            target_event: ripple
+
+    datasink:
+        class: FileSerializer
+        options:
+            encoding: yaml
+            format: full
+            
+    ttl_output:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech
+                port: 0
+                delay: 10
+            enabled: true
+            enable_saving: false
+            pulse_width: 400
+            lockout_period: 100 # [ms]
+            protocols:
+                ripple:
+                    pulse: [0]
+
+connections:
+    - source.hp1=ripple_filter1.data
+    - source.cx1=ripple_filter2.data
+    - ripple_filter1.data=rippledetector.data
+    - ripple_filter2.data=rippledetector_ref.data
+    - rippledetector.events=eventfilter.events
+    - rippledetector_ref.events=eventfilter.blocking_events
+    - rippledetector.statistics.0=networksink.data
+    - eventfilter.events.0=ttl_output.events
+    - eventfilter.events.0=eventsink.events
+    - eventfilter.events.0=datasink.data

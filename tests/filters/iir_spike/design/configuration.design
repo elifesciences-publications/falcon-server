@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Sep 20 12:30:51 2015
+
+@author: davide
+"""
+
+#parameters of the filter
+sample_rate = 32000
+
+N = 4 # desired final order
+#max_ripple_pass = 0.1 #for Chebyshev and elliptic filters, provides the maximum ripple in the passband. (dB)
+#max_ripple_stop = 0.3 #for Chebyshev and elliptic filters, provides the minimum attenuation in the stop band. (dB)
+band_type = 'bandpass'
+#filter_type = 'butter'
+#filter_type = 'cheby1'
+#filter_type = 'cheby2'
+#filter_type = 'ellip'
+filter_type = 'bessel'
+low_cut_hz = 600
+high_cut_hz = 6000
+
+# where the sos coefficients that will be read by Falcon should go
+filepath_sos = "/home/davide/Dropbox/Davide/falcon_fork1/tests/filters/iir_spike/bessel_spike.txt"
+filepath_ba = "/home/davide/Dropbox/Davide/falcon_fork1/tests/filters/iir_spike/ba.npy"

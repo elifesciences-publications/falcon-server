@@ -1,0 +1,22 @@
+processors:     
+    source:
+        class: BehaviorSource
+        options:
+            path_to_linear_position: ""
+            path_to_speed: ""
+            linear_position_range: [0, 200]
+            speed_range: [0, 30]
+            unit: "cm" # cm or pixel
+            sample_rate: 25  
+            streaming_rate: 25
+            initial_timestamp: 5000
+
+    networksink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: full
+            port: 7777
+
+connections:
+    - source.behavior=networksink.data

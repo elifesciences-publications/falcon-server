@@ -1,0 +1,16 @@
+Falcon developers agree on the following code style rules.
+
+
+**RULE 1: Definitons in Headers**
+Source code that is not part of a template or of an inline function must be located in a *.cpp file. The rule applies for simple getter and setter methods/functions as well. Expetion is made for empty defintions ({}).
+As a consequence of this rule, all default values should appear only in the declaration (header).
+As regards templates, you are encouraged to put the definition in a dedicated *.ipp file in order to improve the readibility of the header.
+
+
+**RULE 2: Style for method and function definition**
+Methods and functions must follow the following convention: first bracket on the first line separated by a white space, and the 2nd line is always an empty one. Moreover the body of the definition must be indented with four spaces. Example:
+
+return_type function( type data ) {
+
+        do_something();
+}

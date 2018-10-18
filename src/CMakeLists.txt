@@ -17,7 +17,10 @@ SET( sources
     "data/idata.cpp"
     "data/serialize.cpp"
     "data/eventdata.cpp"
+    "data/likelihooddata.cpp"
     "data/spikedata.cpp"
+    "data/videotrackdata.cpp"
+    "data/behaviordata.cpp"
     "data/muadata.cpp"
     "graph/graphmanager.cpp"
     "graph/processorgraph.cpp"
@@ -44,18 +47,31 @@ LIST(APPEND sources
     "processors/fileserializer.cpp"
     "processors/zmqserializer.cpp"
     "processors/runningstats.cpp"
+    "processors/rippledetector.cpp"
+    "processors/likelihoodsync.cpp"
+    "processors/behaviorestimator.cpp"
     "processors/spikedetector.cpp"
+    "processors/decoder.cpp"
+    "processors/replayidentifier.cpp"
     "processors/multichanneldatafilestreamer.cpp"
     "processors/spikestreamer"
+    "processors/likelihooddatafilestreamer.cpp"
+    "processors/videotrackreader.cpp"
+    "processors/videotrackdatafilestreamer.cpp"   
+    "processors/eventfilter.cpp"
+    "processors/behaviorreader.cpp"
     "processors/muaestimator.cpp"
     "processors/burstdetector.cpp"
-    "processors/openephysreader.cpp"
     "processors/serialoutput.cpp"
-    "processors/rippledetector.cpp"
+    "processors/openephysreader.cpp"
+    "processors/nlxpurereader.cpp"
+    "processors/dispatcher.cpp"
+    "processors/nlxparser.cpp"
+    "processors/eventconverter.cpp"
 )
 
 include_directories( "../ext" )
 include_directories( "../lib" )
 
 add_executable(falcon ${sources})
-target_link_libraries (falcon logging loggers disruptor zmq utilities dsp dio neuralynx npyreader openephys arduino-serial ${YAMLCPP_LIBRARY} ${PLATFORM_LINK_LIBRARIES})
+target_link_libraries (falcon logging loggers disruptor cnpy zmq utilities dsp dio neuralynx gsl gslcblas npyreader gmm environment encoding arduino-serial openephys ${YAMLCPP_LIBRARY} ${PLATFORM_LINK_LIBRARIES})

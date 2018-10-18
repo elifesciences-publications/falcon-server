@@ -1,5 +1,0 @@
-1) run Falcon with the following graph, making sure serilization in binary form: tests/graphs/example_graphs/likelihoodstreamer_serialization.yaml
-
-2) Set the test config_file.py in this folder.
-
-3) Run test_likelihood_streamer.py

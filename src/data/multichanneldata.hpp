@@ -17,8 +17,8 @@
 // along with falcon-server. If not, see <http://www.gnu.org/licenses/>.
 // ---------------------------------------------------------------------
 
-#ifndef MULTICHANNELDATA_H
-#define MULTICHANNELDATA_H
+#ifndef MULTICHANNELDATA_HPP
+#define MULTICHANNELDATA_HPP
 
 #include "idata.hpp"
 #include <vector>
@@ -49,6 +49,7 @@ public:
         
         std::fill( data_.begin(), data_.end(), 0);
         std::fill( timestamps_.begin(), timestamps_.end(), 0);
+        is_duplicate_ = false;
     }
 
     void Initialize( size_t nchannels, size_t nsamples, double sample_rate ) { 
@@ -64,10 +65,9 @@ public:
         nchannels_ = nchannels;
         nsamples_ = nsamples;
         sample_rate_ = sample_rate;
-
         data_.resize( nchannels_*nsamples_ );
-
         timestamps_.resize( nsamples_ );
+        is_duplicate_ = false;
     }
 	
     size_t nchannels() const { return nchannels_; }
@@ -80,7 +80,8 @@ public:
     void set_sample_timestamp( size_t sample, uint64_t t ) {
         
         if ( sample >= nsamples_ ) {
-            std::runtime_error(". Requested sample cannot be accessed");
+            throw std::out_of_range(". Sample index " + std::to_string(sample) +
+                " out of range. Max index is " + std::to_string(nsamples_-1) );
         } else {
             timestamps_[sample] = t;
         }
@@ -111,10 +112,24 @@ public:
     void set_data_sample( size_t sample, size_t channel, T data ) {
         
         if ( sample >= nsamples_ ) {
-            std::runtime_error("Requested sample cannot be accessed.");
-        } else {
-            data_[flat_index(sample,channel)] = data;
+            throw std::out_of_range(". Sample index " + std::to_string(sample) +
+                " out of range. Max index is " + std::to_string(nsamples_-1) ) ;
         }
+        if (channel >= nchannels_ ) {
+            throw std::out_of_range(". Channel index " + std::to_string(sample) +
+                " out of range. Max index is " + std::to_string(nchannels_-1) ) ;
+        }
+        data_[flat_index(sample,channel)] = data;
+    }
+    
+    void mark_as_duplicate( ) {
+        
+        is_duplicate_ = true;
+    }
+    
+    void mark_as_authentic( ) {
+        
+        is_duplicate_ = false;
     }
     
     std::vector<T>& data() { return data_; }
@@ -128,32 +143,88 @@ public:
     const T& operator()( size_t sample, size_t channel = 0 ) const { return data_[flat_index(sample,channel)]; }
 	
     // iterators
-    T* begin_sample( size_t sample ) { return &data_[flat_index(sample)]; }
-    T* end_sample( size_t sample ) { return begin_sample(sample) + nchannels_; }
-    const T* begin_sample( size_t sample ) const { return &data_[flat_index(sample)]; }
-    const T* end_sample( size_t sample ) const { return begin_sample(sample) + nchannels_; }
+    T* begin_sample( size_t sample ) {
+        
+        return &data_[flat_index(sample)];
+    }
     
-    stride_iter<T*> begin_channel( size_t channel ) { return stride_iter<T*>(&data[channel],nchannels_); }
-    stride_iter<T*> end_channel( size_t channel ) { return begin_channel(channel) + nsamples_; }
+    T* end_sample( size_t sample ) {
+        
+        return begin_sample(sample) + nchannels_;
+    }
     
-    virtual void SerializeBinary( std::ostream& stream, Serialization::Format format = Serialization::Format::FULL ) const override {
+    const T* begin_sample( size_t sample ) const {
+        
+        return &data_[flat_index(sample)];
+    }
+    
+    const T* end_sample( size_t sample ) const {
+        
+        return begin_sample(sample) + nchannels_;
+    }
+    
+    
+    stride_iter<T*> begin_channel( size_t channel ) {
+        
+        return stride_iter<T*>(&data[channel],nchannels_);
+    }
+    
+    stride_iter<T*> end_channel( size_t channel ) {
+        
+        return begin_channel(channel) + nsamples_;
+    }
+    
+    T sum_abs_sample( size_t sample ) const {
+        
+        return std::accumulate( begin_sample(sample), end_sample(sample), 0, [](T a, T b) { return a + std::abs(b); } );
+    }
+    
+    T sum_sample( size_t sample ) const {
+        
+        return std::accumulate( begin_sample(sample), end_sample(sample), 0.0 );
+    }
+    
+    T mean_abs_sample( size_t sample ) const {
+        
+        return sum_abs_sample(sample) / nchannels_;
+    }
+    
+    T mean_sample( size_t sample ) const {
+        
+        return sum_sample(sample) / nchannels_;
+    }
+    
+    bool is_duplicate() const {
+        
+        return is_duplicate_;
+    }
+    
+    virtual void SerializeBinary( std::ostream& stream,
+    Serialization::Format format = Serialization::Format::FULL ) const override {
         
         IData::SerializeBinary( stream, format );
         if (format==Serialization::Format::FULL) {
-            stream.write( reinterpret_cast<const char*>( timestamps_.data() ), timestamps_.size() * sizeof(uint64_t) );
-            stream.write( reinterpret_cast<const char*>( data_.data() ), data_.size() * sizeof(T) );
+            stream.write( reinterpret_cast<const char*>( timestamps_.data() ),
+                timestamps_.size() * sizeof(uint64_t) );
+            stream.write( reinterpret_cast<const char*>( data_.data() ),
+                data_.size() * sizeof(T) );
+            stream.write( reinterpret_cast<const char*>( is_duplicate_ ),
+                sizeof(int) ); 
         }
         
         if (format==Serialization::Format::COMPACT) {
             
             for (size_t k=0; k<nsamples_; ++k) {
-                stream.write( reinterpret_cast<const char*>(&timestamps_[k]), sizeof(uint64_t) );
-                stream.write( reinterpret_cast<const char*>(&data_[flat_index(k)]), sizeof(T)*nchannels_ );
+                stream.write( reinterpret_cast<const char*>(&timestamps_[k]),
+                    sizeof(uint64_t) );
+                stream.write( reinterpret_cast<const char*>(&data_[flat_index(k)]),
+                    sizeof(T)*nchannels_ );
             }
         }
     }
     
-    virtual void SerializeYAML( YAML::Node & node, Serialization::Format format = Serialization::Format::FULL ) const override {
+    virtual void SerializeYAML( YAML::Node & node,
+    Serialization::Format format = Serialization::Format::FULL ) const override {
             
         IData::SerializeYAML( node, format );
         if (format==Serialization::Format::FULL || format==Serialization::Format::COMPACT) {
@@ -161,36 +232,25 @@ public:
             // TODO: write samples individually to list of lists, instead of a single flat list
             node["signal"] = data_;
         }
+        if ( format==Serialization::Format::FULL ) {
+            node["is_duplicate"] = is_duplicate_;
+        }
     }
     
-    virtual void YAMLDescription( YAML::Node & node, Serialization::Format format = Serialization::Format::FULL ) const override {
+    virtual void YAMLDescription( YAML::Node & node,
+    Serialization::Format format = Serialization::Format::FULL ) const override {
         
         IData::YAMLDescription( node, format );
         if (format==Serialization::Format::FULL) {
             node.push_back( "timestamps uint64 (" + std::to_string(nsamples_) + ")" );
             node.push_back( "signal " + get_type_string<T>() + " (" + std::to_string(nchannels_) + "," + std::to_string(nsamples_) + ")" );
+            node.push_back( "is_duplicate " + get_type_string<decltype(is_duplicate_)>() + " (1)" );
         }
         
         if (format==Serialization::Format::COMPACT) {
             node.push_back( "timestamps uint64 (1)" );
             node.push_back( "signal " + get_type_string<T>() + " (" + std::to_string(nchannels_) + ")" );
         }
-    }
-    
-    T sum_abs_sample( size_t sample ) const {
-        return std::accumulate( begin_sample(sample), end_sample(sample), 0, [](T a, T b) { return a + std::abs(b); } );
-    }
-    
-    T sum_sample( size_t sample ) const {
-        return std::accumulate( begin_sample(sample), end_sample(sample), 0.0 );
-    }
-    
-    T mean_abs_sample( size_t sample ) const {
-        return sum_abs_sample(sample) / nchannels_;
-    }
-    
-    T mean_sample( size_t sample ) const {
-        return sum_sample(sample) / nchannels_;
     }
 
 protected:
@@ -203,6 +263,7 @@ protected:
     double sample_rate_;
     std::vector<T> data_;
     std::vector<uint64_t> timestamps_;
+    bool is_duplicate_;
 };
 
 template<typename T>
@@ -250,18 +311,8 @@ public:
 
     bool CheckCompatibility( const MultiChannelDataType<T>& upstream ) const {      
     
-        auto check1 = channel_range_.overlapping( upstream.channel_range() );
-        auto check2 = sample_range_.overlapping( upstream.sample_range() ) ;
-        if (check1 && check2 ) {
-            LOG(DEBUG) << "MultichannelData types are compatible (ranges do overlap)." << std::endl;
-        } else {
-            if (!check1) {
-                LOG(ERROR) << "MultichannelData types have non-overlapping channel ranges.";
-            }
-            if (!check2) {
-                LOG(ERROR) << "MultichannelData types have non-overlapping sample ranges.";
-            }
-        }
+        bool check1 = channel_range_.overlapping( upstream.channel_range() );
+        bool check2 = sample_range_.overlapping( upstream.sample_range() ) ;
         return ( check1 && check2 );
     }
 	

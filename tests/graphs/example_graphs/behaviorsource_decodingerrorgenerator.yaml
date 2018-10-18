@@ -1,0 +1,47 @@
+processors:
+    fast_source:
+        class: BehaviorSource
+        options:
+            path_to_linear_position: "/home/davide/Dropbox/Davide/data_analysis/Test_Online_Encoding/test_data/position_stream_cm.npy"
+            path_to_speed: "/home/davide/Dropbox/Davide/data_analysis/Test_Online_Encoding/test_data/speed_stream_cm_selRUN.npy"
+            linear_position_range: [0, 1000]
+            speed_range: [1, 3]
+            unit: "cm" # cm or pixel
+            sample_rate: 25 
+            streaming_rate: 1000
+            initial_timestamp: 88523782670
+
+    slow_source:
+        class: BehaviorSource
+        options:
+            path_to_linear_position: "/home/davide/Dropbox/Davide/falcon_fork1/tests/data/fan_maze/expected_outputs/decoded_linear_position_run_250ms.npy"
+            path_to_speed: ""
+            linear_position_range: [0, 1000]
+            speed_range: [1, 3]
+            unit: "cm" # cm or pixel
+            sample_rate: 4 
+            streaming_rate: 40
+            initial_timestamp: 89351876520
+            path_to_times: "/home/davide/Dropbox/Davide/data_analysis/Test_Online_Encoding/test_data/initial_timebins_train_data.npy"
+
+    generator:    
+        class: DecodingErrorGenerator
+        options:
+            pixel_to_cm: 2
+            memory_time: 20
+            min_speed: 8.5
+            offset_estimate: 50 # in %
+
+    sink(1-2):
+        class: FileSerializer
+        options:
+            encoding: binary          # either yaml or binary
+            format: full            # one of none, full, streamheader, headeronly, compact
+            throttle: false         # whether or not packets should be dropped if we cannot keep up
+
+
+connections:
+    - fast_source.behavior=generator.true_behavior
+    - slow_source.behavior=generator.estimated_behavior
+    - generator.error=sink1.data
+    - generator.median_error=sink2.data

@@ -1,0 +1,24 @@
+processors:
+    source:
+        class: VideoTrackDataFileStreamer
+        options:
+            path_to_x: "/home/davide/Dropbox/Davide/data_analysis/OnlineVideoPreprocessing/fanmaze_vt_x.npy"
+            path_to_y: "/home/davide/Dropbox/Davide/data_analysis/OnlineVideoPreprocessing/fanmaze_vt_y.npy"
+            #path_to_angle: "/home/davide/Dropbox/Davide/data_analysis/OnlineVideoPreprocessing/fanmaze_vt_angle.npy"
+            sample_rate: 25
+            streaming_rate: 100 
+            #resolution: [ 820, 376 ]
+            initial_timestamp: 100
+    
+    sink:
+        class: FileSerializer
+        options:
+            encoding: yaml          # either yaml or binary
+            format: full            # one of none, full, streamheader, headeronly, compact
+            throttle: false         # whether or not packets should be dropped if we cannot keep up
+
+
+connections:
+    - source.vt_data=sink.data
+
+

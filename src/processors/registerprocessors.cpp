@@ -31,14 +31,27 @@
 #include "fileserializer.hpp"
 #include "zmqserializer.hpp"
 #include "runningstats.hpp"
+#include "rippledetector.hpp"
+#include "likelihoodsync.hpp"
+#include "behaviorestimator.hpp"
 #include "spikedetector.hpp"
+#include "decoder.hpp"
+#include "replayidentifier.hpp"
 #include "multichanneldatafilestreamer.hpp"
 #include "spikestreamer.hpp"
+#include "likelihooddatafilestreamer.hpp"
+#include "videotrackreader.hpp"
+#include "videotrackdatafilestreamer.hpp"
+#include "eventfilter.hpp"
+#include "behaviorreader.hpp"
 #include "muaestimator.hpp"
 #include "burstdetector.hpp"
-#include "openephysreader.hpp"
 #include "serialoutput.hpp"
-#include "rippledetector.hpp"
+#include "openephysreader.hpp"
+#include "nlxpurereader.hpp"
+#include "dispatcher.hpp"
+#include "nlxparser.hpp"
+#include "eventconverter.hpp"
 
 void registerProcessors() {
     
@@ -54,13 +67,26 @@ void registerProcessors() {
     REGISTERPROCESSOR(FileSerializer)
     REGISTERPROCESSOR(ZMQSerializer)
     REGISTERPROCESSOR(RunningStats)
+    REGISTERPROCESSOR(RippleDetector)
+    REGISTERPROCESSOR(LikelihoodSync)
+    REGISTERPROCESSOR(BehaviorEstimator)
     REGISTERPROCESSOR(SpikeDetector)
+    REGISTERPROCESSOR(Decoder)
+    REGISTERPROCESSOR(ReplayIdentifier)
     REGISTERPROCESSOR(MultichannelDataFileStreamer)
     REGISTERPROCESSOR(SpikeStreamer)
+    REGISTERPROCESSOR(LikelihoodDataFileStreamer)
+    REGISTERPROCESSOR(VideoTrackReader)
+    REGISTERPROCESSOR(VideoTrackDataFileStreamer)
+    REGISTERPROCESSOR(EventFilter)
+    REGISTERPROCESSOR(BehaviorReader)
     REGISTERPROCESSOR(MUAEstimator)
     REGISTERPROCESSOR(BurstDetector)
-    REGISTERPROCESSOR(OpenEphysReader)
     REGISTERPROCESSOR(SerialOutput)
-    REGISTERPROCESSOR(RippleDetector)
+    REGISTERPROCESSOR(OpenEphysReader)
+    REGISTERPROCESSOR(NlxPureReader)
+    REGISTERPROCESSOR(Dispatcher)
+    REGISTERPROCESSOR(NlxParser)
+    REGISTERPROCESSOR(EventConverter)
 }
 

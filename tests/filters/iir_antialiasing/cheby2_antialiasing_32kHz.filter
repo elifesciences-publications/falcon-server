@@ -1,0 +1,16 @@
+##
+# format = text
+# type = biquad
+# description = 10th order cheby2 lowpass filter with cutoffs at None - 1200 Hz (sampling frequency = 32000 Hz)
+#
+# max_ripple_pass = None
+# max_ripple_stop = 80
+#
+# Header automatically added from custom-made Python script iir_design.py
+##
+0.000104150846192
+1.0 -0.543819577164 1.0 1.0 -1.63856010554 0.67239279416
+1.0 -1.74543291011 1.0 1.0 -1.69882868027 0.729764684142
+1.0 -1.89098571823 1.0 1.0 -1.78367158993 0.810943173376
+1.0 -1.9306421685 1.0 1.0 -1.86598112737 0.890567873952
+1.0 -1.94337322935 1.0 1.0 -1.94032157479 0.963875798902

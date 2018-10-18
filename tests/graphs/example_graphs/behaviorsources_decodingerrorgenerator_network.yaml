@@ -1,0 +1,69 @@
+processors:
+    fast_source:
+        class: BehaviorSource
+        options:
+            path_to_linear_position: ""
+            path_to_speed: ""
+            linear_position_range: [0, 200]
+            speed_range: [0, 30]
+            unit: "cm" # cm or pixel
+            sample_rate: 25  
+            streaming_rate: 25
+            initial_timestamp: 0
+
+    slow_source:
+        class: BehaviorSource
+        options:
+            path_to_linear_position: ""
+            path_to_speed: ""
+            linear_position_range: [50, 150]
+            speed_range: [0, 30]
+            unit: "cm" # cm or pixel
+            sample_rate: 4  
+            streaming_rate: 4
+            initial_timestamp: 125000
+
+    generator:    
+        class: DecodingErrorGenerator
+        options:
+            pixel_to_cm: 2
+            memory_time: 20
+            min_speed: 8.5
+            offset_estimate: 50 # in %
+
+    networksink1:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: full
+            port: 7777
+
+    networksink2:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: full
+            port: 7778
+
+    networksink3:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: full
+            port: 7779
+
+    networksink4:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: full
+            port: 7780
+
+
+connections:
+    - fast_source.behavior=generator.true_behavior
+    - slow_source.behavior=generator.estimated_behavior
+    - fast_source.behavior=networksink1.data
+    - slow_source.behavior=networksink2.data
+    - generator.error=networksink3.data
+    - generator.median_error=networksink4.data

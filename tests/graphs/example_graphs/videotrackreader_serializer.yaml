@@ -1,0 +1,20 @@
+processors:
+    source:
+        class: VideoTrackReader
+        options:
+            ip_address: "tcp://10.86.1.21:5556" # Cheetah PC2 = 10.86.1.21, Cheetah PC1 = 10.86.1.22
+            update_interval: 10
+            n_max_consecutive_occlusions: 5
+
+    sink:
+        class: FileSerializer
+        options:
+            encoding: yaml          # either yaml or binary
+            format: full            # one of none, full, streamheader, headeronly, compact
+            throttle: false         # whether or not packets should be dropped if we cannot keep up
+
+
+connections:
+    - source.vt_data=sink.data
+
+

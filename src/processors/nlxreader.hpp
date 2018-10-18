@@ -37,8 +37,6 @@
  * address <string> - IP address of Digilynx system
  * port <unsigned int> - port of Digilynx system
  * nchannels <unsigned int> - number of channels in Digilynx system
- * use_nthos_conv <bool> - converts from network byte order to
- * host byte order (required on new Neuralynx firmware release). 
  * batch_size <unsigned int> - how many samples to pack into single
  *   MultiChannelData bucket
  * npackets <uint64_t> - number of raw data packets to read before
@@ -97,7 +95,7 @@ struct NlxReaderStats {
 class NlxReader : public IProcessor 
 {
 public:
-    NlxReader() : IProcessor( PRIORITY_HIGH ) {};
+    NlxReader() : IProcessor( PRIORITY_MAX ) {};
     
     virtual void Configure( const YAML::Node  & node, const GlobalContext& context ) override;
     virtual void CreatePorts() override;
@@ -124,7 +122,6 @@ protected:
     std::uint64_t npackets_;
     unsigned int batch_size_;
     unsigned int nchannels_;
-    bool use_nthos_conv_;
 
 // internals
 protected:
@@ -146,6 +143,7 @@ protected:
     NlxSignalRecord nlxrecord_;
     
     bool dispatch_;
+    bool use_nthos_conv_;
     bool hardware_trigger_;
     uint32_t hardware_trigger_channel_;
     

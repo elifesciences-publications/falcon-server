@@ -1,0 +1,46 @@
+processors:
+    source:
+        class: OpenEphysReader
+        advanced:
+            threadcore: 0
+        options:
+            #batch_size: 10
+            update_interval: 5
+            #npackets: 24000
+            channelmap:
+                tt1: [0,1,2,3]
+                tt2: [4,5,6,7]
+                
+    dummyprocessor(1-2):
+        class: LevelCrossingDetector
+        options:
+            event: rising_edge
+            threshold: 100.0
+            upslope: true
+
+    sync:
+        class: EventSync
+        options:
+            event: rising_edge
+
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech # dummy or advantech
+                port: 0
+                delay: 10
+            enabled: true
+            pulse_width: 200
+            enable_saving: false # save serial numbers
+            lockout_period: 0 # [ms]
+            protocols:
+                rising_edge:
+                    pulse: [0]
+            print_protocol_execution_updates: false
+
+connections:
+    - source.tt(1-2)=dummyprocessor(1-2).data
+    - dummyprocessor(1-2).events=s:(0-1).p:events.f:sync
+    - sync.events=sink.events
+

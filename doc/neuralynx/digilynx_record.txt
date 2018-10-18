@@ -1,0 +1,22 @@
+Each Digital Lynx SX data record consists of a single A/D sample from every channel and is organized in 3 sections as below:
+
+1. Header [68 Bytes] consists of 17 32-bit values
+1.1. Start of frame (fixed value)
+1.2. Packet ID (fixed value)
+1.3. Record Size (fixed value)
+1.4. Timestamp high order bytes (high order 32 bits of 64 bit TS)
+1.5. Timestamp low order bytes (high order 32 bits of 64 bit TS)
+1.6. System Status
+1.7. TTL IO
+1.8. Reserved 0
+1.9. Reserved 1
+1.10. Reserved 2
+1.11. Reserved 3
+1.12. Reserved 4
+1.13. Reserved 5
+1.14. Reserved 6
+1.15. Reserved 7
+1.16. Reserved 8
+1.17. Reserved 9
+2. Data [128 bytes * number of input boards] each 32-channel input board generates a 32x32-bit array of values
+3. Footer [4 bytes] A simple checksum, bitwise XOR of all prior 32-bit values in the record

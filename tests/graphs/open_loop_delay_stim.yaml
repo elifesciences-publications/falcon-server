@@ -1,0 +1,36 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [OL_detection]
+            rate: 0.25
+
+    convert:
+        class: EventConverter
+        options:
+            event_name: OL_stimulation
+            replace: true
+            
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: dummy
+                port: 0
+                delay: 20
+            enabled: true
+            pulse_width: 400 #us
+            lockout_period: 0 # [ms]
+            remove_stim_delays: false
+            protocols:
+                OL_detection:
+                    pulse: [0]
+                OL_stimulation:
+                    pulse: [1]
+                    delay: [1000,2000] # make an interval
+
+connections:
+    - source.events=convert.events
+    - source.events=sink.events.0
+    - convert.events=sink.events.1
+

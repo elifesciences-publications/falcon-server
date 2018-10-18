@@ -174,6 +174,8 @@ private:    // called by ProcessorEngine
 protected:
     std::map<std::string, std::shared_ptr<std::ostream>> streams_;
     std::vector<TimePoint> test_source_timestamps_;
+    bool roundtrip_latency_test_;
+    const decltype(roundtrip_latency_test_) DEFAULT_LATENCY_TEST = false;
     
 protected:
     std::map<std::string,std::function<YAML::Node(const YAML::Node&)>> exposed_methods_;

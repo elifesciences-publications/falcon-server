@@ -18,8 +18,9 @@
 // ---------------------------------------------------------------------
 
 #include "multichannelfilter.hpp"
-
+#include "utilities/general.hpp"
 #include "g3log/src/g2log.hpp"
+
 #include <thread>
 #include <chrono>
 #include <exception>
@@ -28,13 +29,13 @@ void MultiChannelFilter::CreatePorts( ) {
     
     data_in_port_ = create_input_port(
         "data",
-        MultiChannelDataType<double>( ChannelRange(1,256) ),
-        PortInPolicy( SlotRange(0,256) ) );
+        MultiChannelDataType<double>( ChannelRange(1,MAX_N_CHANNELS) ),
+        PortInPolicy( SlotRange(0,MAX_N_CHANNELS) ) );
     
     data_out_port_ = create_output_port(
         "data",
-        MultiChannelDataType<double>( ChannelRange(1,256) ),
-        PortOutPolicy( SlotRange(0,256) ) );
+        MultiChannelDataType<double>( ChannelRange(1,MAX_N_CHANNELS) ),
+        PortOutPolicy( SlotRange(0,MAX_N_CHANNELS) ) );
 }
 
 void MultiChannelFilter::Configure( const YAML::Node & node, const GlobalContext& context ) {
@@ -92,8 +93,6 @@ void MultiChannelFilter::Unprepare( GlobalContext& context ) {
     filters_.clear();
 }
 
-void MultiChannelFilter::Preprocess( ProcessingContext& context ) {}
-
 void MultiChannelFilter::Process( ProcessingContext& context ) {
     
     
@@ -126,9 +125,6 @@ void MultiChannelFilter::Process( ProcessingContext& context ) {
             data_out_port_->slot(k)->PublishData();
             data_in_port_->slot(k)->ReleaseData();
             
-        }
-                
+        }      
     }
 }
-
-void MultiChannelFilter::Postprocess( ProcessingContext& context ) {}

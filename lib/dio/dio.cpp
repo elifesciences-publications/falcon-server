@@ -17,9 +17,11 @@
 // along with falcon-server. If not, see <http://www.gnu.org/licenses/>.
 // ---------------------------------------------------------------------
 
+#include <algorithm>
 #include "dio.hpp"
-
 #include "utilities/time.hpp"
+
+#include <iostream>
 
 uint32_t DigitalState::nchannels() const {
     
@@ -158,6 +160,23 @@ void DigitalOutputProtocol::set_pulse_width( unsigned int value ) {
     pulse_width_ = value;
 }
 
+void DigitalOutputProtocol::set_delay( std::vector<uint32_t> delay_values ) {
+    
+    if (delay_values.size() > 2) {
+        throw std::runtime_error(
+            "Delay must be either a single number or an interval (two numbers).");
+    }
+    
+    if (delay_values.size() == 1 or delay_values[0]==delay_values[1]) {
+        fixed_delay_ = true;
+        delay_us_ = delay_values[0]*1e3;
+    } else {
+        fixed_delay_ = false;
+        distribution_ = std::uniform_int_distribution<unsigned int>( delay_values[0]*1e3,
+            delay_values[1]*1e3 );
+    }
+}
+
 void DigitalOutputProtocol::set_mode( std::vector<uint32_t> channels, DigitalOutputMode mode ) {
     
     for (const uint32_t & c : channels) {
@@ -178,10 +197,18 @@ std::vector<uint32_t> DigitalOutputProtocol::find_channels( DigitalOutputMode mo
     return channels;    
 }
 
-void DigitalOutputProtocol::execute( DigitalDevice & device ) {
+void DigitalOutputProtocol::execute( DigitalDevice & device, bool no_delays ) {
     
     DigitalState state(nchannels_);
     std::vector<uint32_t> channels;
+    
+    if (delay_us_>0 and no_delays==false) {
+        if (fixed_delay_) {
+            custom_sleep_for( delay_us_ );
+        } else {
+            custom_sleep_for( distribution_(generator_) );
+        }
+    }
     
     state = device.read_state();
     
@@ -204,7 +231,6 @@ void DigitalOutputProtocol::execute( DigitalDevice & device ) {
         state.set_state( channels, false );
         device.write_state( state );
     }
-    
 }
 
 

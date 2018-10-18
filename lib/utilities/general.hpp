@@ -66,6 +66,8 @@ void check_buffer_sizes_and_log(
 const double MAX_N_HOURS_TEST = 1.5;
 constexpr std::size_t MAX_TEST_SAMPLING_FREQUENCY = NLX_SIGNAL_SAMPLING_FREQUENCY;
 
+const unsigned int MAX_N_CHANNELS = 256;
+
 #include "general.ipp"
 
 #endif // general.hpp

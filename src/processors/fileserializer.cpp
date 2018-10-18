@@ -25,13 +25,6 @@
 
 #include <fstream>
 
-void FileSerializer::CreatePorts() {
-    
-    data_port_ = create_input_port(
-        "data",
-        AnyDataType(),
-        PortInPolicy( SlotRange(1,256), false, 0 ) );
-}
 
 void FileSerializer::Configure( const YAML::Node & node, const GlobalContext& context ) {
     
@@ -60,6 +53,19 @@ void FileSerializer::Configure( const YAML::Node & node, const GlobalContext& co
     if (throttle_smooth_<0 || throttle_smooth_>1) {
         throw ProcessingConfigureError("Throttle smooth value should be in range 0-1.", name());
     }
+    
+    time_out_us_ = node["time_out_us"].as<decltype(time_out_us_)>(
+        DEFAULT_TIMEOUT_MICROSEC );
+    LOG_IF(INFO, (time_out_us_!=DEFAULT_TIMEOUT_MICROSEC) ) << name() <<
+        ". Time out set to " << time_out_us_ << " microseconds.";
+}
+
+void FileSerializer::CreatePorts() {
+    
+    data_port_ = create_input_port(
+        "data",
+        AnyDataType(),
+        PortInPolicy( SlotRange(1,256), false, time_out_us_ ) );
 }
 
 void FileSerializer::Preprocess(ProcessingContext& context) {
@@ -87,14 +93,11 @@ void FileSerializer::Preprocess(ProcessingContext& context) {
         filename = path + "/" + name() + "." + std::to_string(k) + "_" + address +
             "." + serializer_->extension();
         
-        // if file exists
         if (!overwrite_ && path_exists(filename)) {
             throw ProcessingError( "Output file " + filename + " exists.", name() );
         }
-        // try to open file
         stream = std::unique_ptr<std::ostream>(
             new std::ofstream( filename, std::ofstream::out | std::ofstream::binary ) );
-        
         if (!stream->good()) {
             throw ProcessingError( "Error opening output file " + filename + ".", name() );
         }
@@ -109,7 +112,6 @@ void FileSerializer::Preprocess(ProcessingContext& context) {
         upstream_buffer_size_[k] = static_cast<unsigned int>(
             data_port_->slot(k)->upstream_policy().buffer_size() );
     }   
-        
 }
 
 void FileSerializer::create_preamble( std::ostream & out, int slot ) {
@@ -151,7 +153,6 @@ void FileSerializer::Process(ProcessingContext& context) {
             if (!data_port_->slot(k)->RetrieveDataAll( data )) {break;}
             
             nread = data_port_->slot(k)->status_read();
-            
             if (nread==0) { data_port_->slot(k)->ReleaseData(); continue; }
             
             if (!throttle_) {
@@ -197,11 +198,8 @@ void FileSerializer::Process(ProcessingContext& context) {
             }
             
             data_port_->slot(k)->ReleaseData();
-            
         }
-        
     }
-    
 }
 
 void FileSerializer::Postprocess( ProcessingContext& context ) {

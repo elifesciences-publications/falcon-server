@@ -1,0 +1,19 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [open_loop_stim]
+            rate: 1.0
+
+    sink:
+        class: SerialOutput
+        options:
+            enabled: true
+            #port_address: ""
+            target_event: open_loop_stim
+            message: "d"
+            lockout_period_ms: 50
+
+connections:
+    - source.events=sink.events
+

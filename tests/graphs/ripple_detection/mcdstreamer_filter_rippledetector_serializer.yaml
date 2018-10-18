@@ -1,0 +1,48 @@
+processors:
+    source:
+        class: MultichannelDataFileStreamer
+        options:
+            filepath : "/home/davide/Data/RippleData/ripple_data_sleepbox_2min_7sec.npy"
+            sample_rate : 32000
+            streaming_rate : 32000
+            batch_size: 10
+            initial_timestamp : 0
+
+    filter:
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/elliptic_rippleband.filter
+
+    rippledetector:
+        class: RippleDetector
+        options:
+            threshold: 4
+            smooth_time: 1 # in seconds
+            detection_lockout_time: 100 # [ms]
+            enabled: true
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 0.5
+            statistics_downsample_factor: 1
+
+    eventsink:
+        class: FileSerializer
+        options:
+            encoding: yaml
+            format: full
+            throttle: false
+
+    datasink(1-2):
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: compact
+            throttle: false
+
+connections:
+    - source.data=filter.data
+    - filter.data=rippledetector.data
+    - rippledetector.events=eventsink.data
+    - rippledetector.statistics.0=datasink1.data
+    - filter.data.0=datasink2.data

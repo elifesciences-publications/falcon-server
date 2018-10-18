@@ -1,0 +1,98 @@
+processors:
+    source:
+        class: NlxReader
+        advanced:
+            threadpriority: 100
+            threadcore: 0
+        options:
+            address: 192.168.3.100
+            port: 26090
+            batch_size: 3
+            update_interval: 10
+            channelmap:
+                hp1: [8]
+                cx1: [17,24]
+
+    ripple_filter(1-2):
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/iir_ripple_low_delay/matlab_design/iir_ripple_low_delay.filter
+
+    HIPPOCAMPUS_detector:
+        class: RippleDetector
+        options:
+            threshold_dev: 7.5
+            smooth_time: 15 # in seconds
+            detection_lockout_time_ms: 50 #ms
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 1.0 # sec
+            statistics_downsample_factor: 4
+            use_power: true
+
+    CORTEX_detector:
+        class: RippleDetector
+        options:
+            threshold_dev: 5
+            smooth_time: 15 # in seconds
+            detection_lockout_time_ms: 50 #ms
+            stream_events: true
+            stream_statistics: false
+            statistics_buffer_size: 1.0 # sec
+            statistics_downsample_factor: 4
+            use_power: true
+
+    eventfilter:
+        class: EventFilter
+        options:
+            target_event: ripple
+            blockout_time_ms: 40
+            synch_time_ms: 1.5
+            time_in_ms: 4 # below 3.5, asynch can occur
+            detection_criterion: "any" # 'any', 'all' or number
+            discard_warnings: false
+
+    networksink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+
+    eventsink:
+        class: EventSink
+        options:
+            target_event: ripple
+
+    datasink:
+        class: FileSerializer
+        options:
+            encoding: yaml
+            format: full
+            
+    ttl_output:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech
+                port: 0
+                delay: 10
+            enabled: true
+            enable_saving: false
+            pulse_width: 400
+            lockout_period: 100 # [ms]
+            protocols:
+                ripple:
+                    pulse: [0]
+
+connections:
+    - source.hp1=ripple_filter1.data
+    - source.cx1=ripple_filter2.data
+    - ripple_filter1.data=HIPPOCAMPUS_detector.data
+    - ripple_filter2.data=CORTEX_detector.data
+    - HIPPOCAMPUS_detector.events=eventfilter.events
+    - CORTEX_detector.events=eventfilter.blocking_events
+    - HIPPOCAMPUS_detector.statistics.0=networksink.data
+    - eventfilter.events.0=ttl_output.events
+    - eventfilter.events.0=eventsink.events
+    - eventfilter.events.0=datasink.data

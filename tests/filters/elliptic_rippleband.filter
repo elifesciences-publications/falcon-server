@@ -1,0 +1,25 @@
+##
+# format = text
+# type = biquad
+# description = 8th order elliptic bandpass filter with cutoffs 140-225Hz (32kHz sampling frequency)
+#
+# created in matlab:
+# Fs = 32000;
+# N      = 8;
+# Fpass1 = 140;
+# Fpass2 = 225;
+# Apass  = 1;
+# Astop  = 80;
+#
+# h = fdesign.bandpass('N,Fp1,Fp2,Ast1,Ap,Ast2', N, Fpass1, Fpass2, Astop, Apass, Astop, Fs);
+# Hd = design(h, 'ellip');
+# sos = Hd.sosMatrix;
+# gain = prod( Hd.ScaleValues );
+#
+# header added manually
+##
+1.001789638125071e-04
+1.000000000000000  -1.964440627960079   1.000000000000000   1.000000000000000  -1.992310008922714   0.993786612640863
+1.000000000000000  -1.999958875556555   1.000000000000000   1.000000000000000  -1.993909989893162   0.994902978371283
+1.000000000000000  -1.991906272720344   1.000000000000000   1.000000000000000  -1.995281648774314   0.997216915452418
+1.000000000000000  -1.999818076551643   1.000000000000000   1.000000000000000  -1.997494828624198   0.998255012952268

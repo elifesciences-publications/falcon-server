@@ -164,7 +164,7 @@ void ProcessorEngine::Start(RunContext& runcontext) {
         
         if (!set_realtime_priority( thread_.native_handle(), thread_priority_)) {
             LOG(WARNING) << "Unable to set thread priority for " << name_;
-        } else if (thread_priority_>=PRIORITY_LOW) {
+        } else if (thread_priority_>=PRIORITY_MIN) {
             LOG(INFO) << "Successfully set thread priority for " << name_ << " to " << thread_priority_ << "%.";
         }
         

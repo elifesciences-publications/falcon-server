@@ -1,0 +1,19 @@
+processors:
+    source:
+        class: EventSource
+        options:
+            events: [open_loop_stim]
+            rate: 2
+
+    sink:
+        class: SerialOutput
+        options:
+            enabled: true
+            port_address: "/dev/ttyACM1"
+            target_event: open_loop_stim
+            #message: "1"
+            lockout_period_ms: 50
+
+connections:
+    - source.events=sink.events
+

@@ -17,13 +17,15 @@
 // along with falcon-server. If not, see <http://www.gnu.org/licenses/>.
 // ---------------------------------------------------------------------
 
-#ifndef DIO_H
-#define DIO_H
+#ifndef DIO_HPP
+#define DIO_HPP
 
 #include <string>
 #include <cstdint>
 #include <vector>
 #include <stdexcept>
+#include <random>
+#include <memory>
 
 
 enum class DigitalOutputMode {NONE, HIGH, LOW, TOGGLE, PULSE};
@@ -101,16 +103,28 @@ public:
     unsigned int pulse_width() const;
     void set_pulse_width( unsigned int value );
     
+    unsigned int requested_delay( uint32_t channel ) const { return delays_[channel]; }
+    unsigned int delay() const { return delay_us_; }
+    void set_delay( std::vector<unsigned int> delay_values );
+    void set_delay( unsigned int delay ) { delay_us_ = delay; }
+    
     std::vector<uint32_t> find_channels( DigitalOutputMode mode = DigitalOutputMode::NONE ) ;
     
-    void execute( DigitalDevice & device );
+    uint32_t n_channels() const { return nchannels_;}
+    
+    void execute( DigitalDevice & device, bool no_delays );
     
 protected:
     
     uint32_t nchannels_;
     unsigned int pulse_width_;
     std::vector<DigitalOutputMode> mode_;
+    std::vector<unsigned int> delays_;
+    unsigned int delay_us_;
+    bool fixed_delay_;
+    std::default_random_engine generator_;
+    std::uniform_int_distribution<unsigned int> distribution_;
 };
 
 
-#endif // DIO_H
+#endif // DIO_HPP

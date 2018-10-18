@@ -1,0 +1,16 @@
+In order to read data from the 2nd port of the Digilynx you need to clone the MAC address of the data acquision PC. Also you need the set the same IP address of the data acquisition PC.
+
+You can do this by installing macchanger (sudo apt-get macchanger) and adding the following line to your /etc/network/interfaces file (use the correct number of ethernet connection, here it's 2)
+
+#Acquisition PC 1
+pre-up macchanger -m 00:1B:21:A7:53:07 eth2
+#Acquisition PC 2
+#pre-up macchanger -m 00:1B:21:A7:52:4F eth2
+#Acquisition PC 3
+#pre-up macchanger -m 00:15:77:4F:9B:E1 eth2
+iface eth2 inet static
+address 192.168.3.100
+netmask 255.255.255.0
+
+
+An example of full interfaces file is present in this folder.

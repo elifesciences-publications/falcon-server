@@ -31,8 +31,8 @@
 // copy packet into external buffer to be sent over network using ToNetworkBuffer
 
 
-#ifndef NLX_H
-#define NLX_H
+#ifndef NLX_HPP
+#define NLX_HPP
 
 #include <cstdint>
 #include <vector>

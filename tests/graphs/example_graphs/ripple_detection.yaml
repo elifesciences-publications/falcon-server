@@ -1,0 +1,48 @@
+processors:
+    source:
+        class: NlxReader
+        options:
+            batch_size: 5
+            update_interval: 10
+            channelmap:
+                tt1: [0, 1, 2, 3]
+    filter:
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/elliptic_rippleband.filter
+    ripple:
+        class: RippleDetector
+        options:
+            threshold: 8 # in deviations
+            smooth_time: 1 # in sec
+            detection_lockout_time: 200 # [ms]
+            enabled: true
+            stream_events: true
+            stream_statistics: true
+            statistics_buffer_size: 0.5
+            statistics_downsample_factor: 2
+    sink:
+        class: EventSink
+        options:
+            target_event: ripple
+    
+    filesink:
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: none
+            throttle: false
+    
+    zmqsink:
+        class: ZMQSerializer
+        options:
+            encoding: binary
+            format: compact
+
+connections:
+    - source.tt1=filter.data
+    - filter.data=ripple.data
+    - ripple.events=sink.events
+    - ripple.statistics.0=filesink.data
+    - ripple.statistics.0=zmqsink.data

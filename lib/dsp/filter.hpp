@@ -17,8 +17,8 @@
 // along with falcon-server. If not, see <http://www.gnu.org/licenses/>.
 // ---------------------------------------------------------------------
 
-#ifndef DSP_FILTER_H
-#define DSP_FILTER_H
+#ifndef FILTER_HPP
+#define FILTER_HPP
 
 #include <vector>
 #include <array>
@@ -28,6 +28,7 @@
 #include <string>
 #include <cstring>
 #include <regex>
+#include <cassert>
 
 #include <cctype>
 #include <algorithm>
@@ -224,4 +225,4 @@ namespace YAML {
 
 }
 
-#endif // DSP_FILTER_H
+#endif // FILTER_HPP

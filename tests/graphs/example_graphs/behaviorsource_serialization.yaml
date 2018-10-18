@@ -1,0 +1,22 @@
+processors:     
+    source:
+        class: BehaviorSource
+        options:
+            path_to_linear_position:  repo:///tests/data/bifurcated_maze/behavior/decoded_positions.npy
+            path_to_speed: ""
+            linear_position_range: [0, 200]
+            speed_range: [0, 30]
+            unit: "cm" # cm or pixel
+            sample_rate: 10  
+            streaming_rate: 25
+            initial_timestamp: 5000
+
+    sink:
+        class: FileSerializer
+        options:
+            encoding: yaml          # either yaml or binary
+            format: full            # one of none, full, streamheader, headeronly, compact
+            throttle: false         # whether or not packets should be dropped if we cannot keep up
+
+connections:
+    - source.behavior=sink.data

@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 14 16:01:18 2014
+
+@author: davide
+"""
+from __future__ import division
+import numpy as np
+from matplotlib import pyplot as plt
+from scipy.signal import iirfilter, freqz, zpk2sos
+import configuration as config
+
+# compute Nyquist frequency
+nyq_hz = config.sample_rate/2
+
+#create inputs for filter design
+if config.band_type == 'bandpass':
+    Wn = [config.low_cut_hz/nyq_hz, config.high_cut_hz/nyq_hz]
+elif config.band_type == 'lowpass':
+    Wn = config.high_cut_hz/nyq_hz
+elif config.band_type == 'highpass':
+    Wn = config.low_cut_hz/nyq_hz
+    
+# design filter in different outputs
+if config.band_type == 'bandpass':
+    N = int(config.N / 2)
+else:
+    N = config.N
+b, a = iirfilter(N, Wn, btype=config.band_type, ftype=config.filter_type, output='ba')
+z, p, gain = iirfilter(N, Wn, btype=config.band_type, ftype=config.filter_type, output='zpk')
+
+# compute SOS coefficients with unitary gain
+sos = zpk2sos(z, p, gain)
+sos[0, :3] /= sos[0][0]
+
+# compute order and check stability
+order = max([len(a) - 1, len(b) - 1])
+print "filter order is: " + str(order)
+if (np.all(np.abs(np.roots(a)) < 1)):
+    print "the designed IIR filter is stable"
+else:
+    print "the designed IIR filter is NOT stable"
+
+# plot frequency responses
+npoints = nyq_hz/20
+w, h = freqz(b, a, worN = np.linspace(0, nyq_hz, npoints)/config.sample_rate*2*np.pi)
+plt.figure()
+plt.plot(w/np.pi*nyq_hz, 20*np.log10(np.abs(h)), 'b')
+plt.title('Digital filter frequency response')
+plt.ylabel('Magnitude [dB]', color='b')
+plt.xlabel('Frequency (Hz)')
+plt.grid(b=True, which='major', linestyle='-')
+
+plt.figure()
+plt.plot(w/np.pi*nyq_hz, np.angle(h)/np.pi*180, 'g')
+plt.title('Digital filter frequency response')
+plt.ylabel('Phase [degrees]', color='g')
+plt.ylim([-180, 180])
+plt.xlabel('Frequency (Hz)')
+plt.yticks(np.arange(-180, 210, 30))
+plt.grid(b=True, which='major', linestyle='-')
+
+w, h = freqz(b, a, worN = np.linspace(0, nyq_hz/2, npoints)/config.sample_rate*2*np.pi)
+plt.figure()
+plt.plot(w/np.pi*nyq_hz, 20*np.log10(np.abs(h)), 'b')
+plt.title('Digital filter frequency response')
+plt.ylabel('Magnitude [dB]', color='b')
+plt.xlabel('Frequency (Hz)')
+plt.grid(b=True, which='major', linestyle='-')
+
+# save filter coefficients in formats that Falcon and Python understands easily
+with open(config.filepath_sos, "w") as f:
+    f.write("\n".join(" ".join(map(str, x)) for x in ([gain], sos[0], sos[1])))
+print "Filter SOS coefficients saved in " + config.filepath_sos
+np.save( open( config.filepath_ba, "w" ), (b, a))
+print "Filter ba coefficients saved in " + config.filepath_ba
+
+plt.show()

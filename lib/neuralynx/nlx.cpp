@@ -20,6 +20,8 @@
 #include <cassert>
 #include "nlx.hpp"
 
+#include <iostream>
+
 bool valid_nlx_vt( VideoRec* vt_record, std::uint16_t vt_id,
     ErrorNLXVT::Code& error_code, decltype(NLX_VIDEO_RESOLUTION) resolution ) {
     
@@ -75,7 +77,10 @@ void NlxSignalRecord::set_nchannels( unsigned int n ) {
 bool NlxSignalRecord::FromNetworkBuffer( char * buffer, size_t n, bool use_nthos_conv ) {
     
     // check size
-    if (n!=nlx_packetbytesize_) {return false;}
+    if (n!=nlx_packetbytesize_) {
+	std::cout << ". Numbers of bytes read does not match packetsize" << std::endl;
+	return false;
+    }
     
     // perform ntoh conversion, copying into local buffer in the process
     char * p = (char*) buffer_.data();
@@ -152,15 +157,26 @@ bool NlxSignalRecord::finalized() {
     
 bool NlxSignalRecord::valid() {
     
-    if (buffer_[NLX_FIELD_STX] != NLX_STX || 
-        buffer_[NLX_FIELD_RAWPACKETID] != NLX_RAWPACKETID || 
-        buffer_[NLX_FIELD_PACKETSIZE] != nlx_packetsize_) {
+    if (buffer_[NLX_FIELD_STX] != NLX_STX) {
+	std::cout << ". Incorrect STX (Should be " << NLX_STX << ", but found " << buffer_[NLX_FIELD_STX] << ")." << std::endl;
+        initialized_ = false;
+        return false;
+    }
     
+    if (buffer_[NLX_FIELD_RAWPACKETID] != NLX_RAWPACKETID) {
+	std::cout << ". Incorrect NLX_FIELD_RAWPACKETID (Should be " << NLX_FIELD_RAWPACKETID << ", but found " << buffer_[NLX_FIELD_RAWPACKETID] << ")." << std::endl;
+        initialized_ = false;
+        return false;
+    }
+    
+    if (buffer_[NLX_FIELD_PACKETSIZE] != nlx_packetsize_) {
+    	std::cout << ". Incorrect NLX_FIELD_PACKETSIZE (Should be " << nlx_packetsize_ << ", but found " << buffer_[NLX_FIELD_PACKETSIZE] << ")." << std::endl;
         initialized_ = false;
         return false;
     }
     
     if (buffer_[nlx_field_crc_] != crc()) {
+	std::cout << ". Incorrect CRC (Should be " << crc() << ", but found " << buffer_[nlx_field_crc_] << ")." << std::endl;
         finalized_ = false;
         return false;
     }

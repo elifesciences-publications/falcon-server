@@ -1,0 +1,7 @@
+In order to read data from Neuralynx a default IP address must be set on the network socket (192.168.3.100).
+
+You can use the following command to set it. 
+
+sudo ifconfig <ethx> 192.168.3.100 netmask 255.255.255.0 up
+
+(Replace <ethx> with the interface of the network card used for reading UDP pakceges from the Neuralynx Digilynx.)

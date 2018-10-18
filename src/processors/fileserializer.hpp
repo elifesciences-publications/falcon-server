@@ -79,6 +79,7 @@ protected:
     
     double throttle_level_;
     std::vector<uint64_t> nskipped_;
+    int64_t time_out_us_;
 
 public:
     const std::string DEFAULT_ENCODING = "binary";
@@ -88,6 +89,7 @@ public:
     const bool DEFAULT_THROTTLE = false;
     const decltype(throttle_threshold_) DEFAULT_THROTTLE_THRESHOLD = 0.3;
     const decltype(throttle_smooth_) DEFAULT_THROTTLE_SMOOTH = 0.5;
+    const decltype(time_out_us_) DEFAULT_TIMEOUT_MICROSEC = 500;
 };
 
 #endif //fileserializer.hpp

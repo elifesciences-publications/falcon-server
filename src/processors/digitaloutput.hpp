@@ -21,7 +21,7 @@
  * according to an event-specific protocol
  * 
  * input ports:
- * events <EventData> (1 slot)
+ * events <EventData> (1-4 slots)
  *
  * output ports:
  * none
@@ -88,7 +88,7 @@ public:
     
 
 protected:
-    bool to_lock_out( const uint64_t current_timestamp );
+    bool to_lock_out( const uint64_t current_timestamp, SlotType s );
     
 protected:
     PortIn<EventDataType>* data_in_port_;
@@ -98,6 +98,9 @@ protected:
     
     int default_lockout_period_ms_;
     ReadableState<decltype(default_lockout_period_ms_)>* lockout_period_ms_; 
+    
+    bool default_disable_delays_;
+    ReadableState<decltype(default_disable_delays_)>* disable_delays_;
     
     bool save_stim_events_;
     std::wstring device_name_;
@@ -112,8 +115,8 @@ protected:
     decltype(nreceived_events_) nprotocol_executions_;
     decltype(nreceived_events_) n_locked_out_events_;
     
-    uint64_t previous_TS_nostim_;
-    decltype(default_lockout_period_ms_) delta_TS_ms_;
+    std::vector<uint64_t> previous_TS_nostim_;
+    std::vector<decltype(default_lockout_period_ms_)> delta_TS_ms_;
     
 public:
     const decltype(default_enabled_) DEFAULT_ENABLED = true;
@@ -124,6 +127,7 @@ public:
     const unsigned int DEFAULT_DUMMY_NCHANNELS = 16;
     const int DEFAULT_ADVANTECH_PORT = -1;
     const std::uint64_t DEFAULT_ADVANTECH_DELAY = 10;
+    const decltype(default_disable_delays_) DEFAULT_DISABLE_DELAYS = false;
     
 protected:
     const std::string STIM_EVENT_S = "stim_";

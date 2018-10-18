@@ -1,0 +1,164 @@
+processors:
+    source:
+        class: NlxPureReader
+        advanced:
+            threadpriority: 100
+            threadcore: 0
+        options:
+            address: 192.168.3.100 # room A 192.168.3.99, room B 192.168.3.100
+            port: 26090
+
+    vt_reader:
+        class: VideoTrackReader
+        options:
+            ip_address: "tcp://10.86.1.21:5556" # tcp://10.86.1.21 = Cheetah PC2, tcp://10.86.1.22 = Cheetah PC1
+            update_interval: 10
+            n_max_consecutive_occlusions: 5
+
+    parser:
+        class: NlxParser
+        options:
+            batch_size: 2
+            update_interval: 15
+
+    dispatcher:
+        class: Dispatcher
+        options:
+            channelmap:
+                tt1: [0, 1, 2, 3]
+                tt2: [4, 5, 6, 7]
+                tt3: [8, 9, 10, 11]
+                tt4: [12, 13, 14, 15]
+                tt9: [32, 33, 34, 35]
+                tt10: [36, 37, 38, 39]
+                tt11: [40, 41, 42, 43]
+                tt12: [44, 46, 47]
+                tt14: [52, 53, 54, 55]
+                tt18: [68, 69, 70, 71]
+                tt19: [72, 73, 74, 75]
+                tt20: [76, 77, 78, 79]
+                tt22: [84, 85, 86, 87]
+                tt24: [92, 93, 94, 95]
+
+    filter(1-4, 9-12, 14, 18-20, 22, 24):
+        class: MultiChannelFilter
+        options:
+            filter:
+                file: repo://tests/filters/iir_spike/bessel_spike.filter
+
+    spikedetector(1-4, 9-12, 14, 18-20, 22, 24):
+        class: SpikeDetector
+        options:
+            threshold: 60.0
+            peak_lifetime: 10
+            buffer_size: 1.25      # amount of data that will be used to look for spikes [ms]
+
+    neuraldecoder(1-4, 9-12, 14, 18-20, 22, 24):
+        class: Decoder
+        options:
+            use_offline_model: true   
+            time_bin_ms: 10      
+            path_to_offline_model: /media/fklab/_data2/Dropbox/ReplayDetection/encoding_models/FM009/24_08_2017/TT # (folder name will auto-completed) must contain lambda_x.npy, mixture_pax.dat, pix.npy, mu.npy, offset.npy
+            path_to_grid: /media/fklab/_data2/Dropbox/ReplayDetection/encoding_models/FM009/24_08_2017/environment/grid.npy
+
+    synchronizer:
+        class: LikelihoodSync
+        options:
+            time_bin_ms: 10 
+
+    behavior_estimator:
+        class: BehaviorEstimator
+        options:
+            time_bin_ms: 250
+            path_to_grid: /media/fklab/_data2/Dropbox/ReplayDetection/encoding_models/FM009/24_08_2017/environment/grid.npy
+            grid_unit: "pixel"
+
+    replayidentifier:
+        class: ReplayIdentifier
+        options:
+            path_to_environment: /media/fklab/_data2/Dropbox/ReplayDetection/encoding_models/FM009/24_08_2017/environment # must be a path containing grid.npy and content_nodes.npy
+            path_to_mua_file: /media/fklab/_data2/Dropbox/ReplayDetection/encoding_models/FM009/24_08_2017/mua/mua.npy
+            min_MUA_std: 3
+            half_integration_window: 6
+            min_peakiness: 0.65
+            min_peakiness_history_avg: 0.65
+            max_2nd_derivative: 1000
+            nan_aware: true
+            update_interval: 1000 # how many time bins in between two updates; if negative, no update
+
+    sink:
+        class: DigitalOutput
+        options:
+            device:
+                type: advantech # dummy or advantech
+                port: 0
+                delay: 10
+            enabled: true
+            pulse_width: 400
+            enable_saving : true
+            lockout_period: 75 # [ms]
+            protocols:
+                #replay_unknown_content:
+                #    pulse: [0]
+                replay_arm1:
+                    pulse: [0]
+                replay_arm2:
+                    pulse: [0]
+                replay_arm3:
+                    pulse: [0]
+
+    sink_spikes(1-4, 9-12, 14, 18-20, 22, 24):
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: compact
+
+    sink_synch:
+        class: FileSerializer
+        advanced:
+            threadcore: 61
+        options:
+            encoding: binary           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+
+    sink_replay:
+        class: FileSerializer
+        advanced:
+            threadcore: 62
+        options:
+            encoding: yaml           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+
+    sink_behavior:
+        class: FileSerializer
+        advanced:
+            threadcore: 63
+        options:
+            encoding: binary           # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+
+    sink_vt:
+        class: FileSerializer
+        options:
+            encoding: binary
+            format: full
+
+connections:
+    - source.udp=parser.udp
+    - parser.data=dispatcher.data
+    - dispatcher.tt(1-4, 9-12, 14, 18-20, 22, 24)=filter(1-4, 9-12, 14, 18-20, 22, 24).data
+    - filter(1-4, 9-12, 14, 18-20, 22, 24).data=spikedetector(1-4, 9-12, 14, 18-20, 22, 24).data
+    - spikedetector(1-4, 9-12, 14, 18-20, 22, 24).spikes=neuraldecoder(1-4, 9-12, 14, 18-20, 22, 24).spikes
+    - neuraldecoder(1-4, 9-12, 14, 18-20, 22, 24).estimates=s:(0-13).p:estimates.f:synchronizer
+    - synchronizer.estimates=replayidentifier.estimates
+    - replayidentifier.events=sink.events
+    - synchronizer.estimates=sink_synch.data
+    - synchronizer.estimates=behavior_estimator.estimates
+    - replayidentifier.events=sink_replay.data
+    - behavior_estimator.behavior=sink_behavior.data
+    - vt_reader.vt=sink_vt.data
+    - spikedetector(1-4, 9-12, 14, 18-20, 22, 24).spikes=sink_spikes(1-4, 9-12, 14, 18-20, 22, 24).data
+
+states:
+    - [source.n_invalid, parser.n_invalid]
+

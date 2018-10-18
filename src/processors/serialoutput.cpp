@@ -45,7 +45,7 @@ void SerialOutput::Configure(const YAML::Node& node, const GlobalContext& contex
     
     port_address_ = node["port_address"].as<std::string>( DEFAULT_PORT_ADDRESS );
     
-    message_ = node["message"].as<decltype(message_)>( DEFAULT_MESSAGE );
+    default_message_ = node["message"].as<decltype(default_message_)>( DEFAULT_MESSAGE );
     
     target_event_ = EventData( node["target_event"].as<std::string>( ) );
     
@@ -72,6 +72,12 @@ void SerialOutput::CreatePorts() {
         initial_lockout_period_ms_,
         Permission::READ,
         Permission::WRITE);
+    
+    message_ = create_readable_shared_state(
+        "message",
+        default_message_,
+        Permission::READ,
+        Permission::WRITE);
 }
 
 void SerialOutput::Preprocess( ProcessingContext& context ) {
@@ -83,7 +89,7 @@ void SerialOutput::Preprocess( ProcessingContext& context ) {
     n_locked_out_events_ = 0;
     previous_TS_nostim_ = std::numeric_limits<decltype(previous_TS_nostim_)>::min();
     
-    if ( context.test() ) {
+    if ( context.test() and roundtrip_latency_test_ ) {
         prepare_latency_test( context );
     }
     
@@ -99,6 +105,7 @@ void SerialOutput::Process( ProcessingContext& context ) {
     std::string path = context.resolve_path( "run://", "run" );
     auto prefix = path + name();
     std::string filename;
+    char message;
     
     while (!context.terminated()) {
 
@@ -112,17 +119,18 @@ void SerialOutput::Process( ProcessingContext& context ) {
 
             if ( not to_lock_out( data_in->hardware_timestamp() ) ) {
                     
-                if ( context.test() ) {
+                if ( context.test() and roundtrip_latency_test_ ) {
                     test_source_timestamps_[nprotocol_executions_] = Clock::now();
                 }
 
-                if ( (serialport_write( fd_, message_.c_str())) != 0 ) {
-                    LOG(ERROR) <<  name() << ". Serial message " << message_
-                            << " not delivered.";
+                message = message_->get();
+                if ( (serialport_write( fd_, &message)) != 0 ) {
+                    LOG(ERROR) <<  name() << ". Serial message " << message <<
+                            " not delivered.";
                 } else {
                     ++ nprotocol_executions_;
                     LOG_IF(UPDATE, print_transmission_updates_) << name()
-                        << ". Message " << message_ << " transmitted serially for "
+                        << ". Message " << message << " transmitted serially for "
                             << data_in->event() << " event.";
                 }
                 
@@ -157,7 +165,7 @@ void SerialOutput::Postprocess( ProcessingContext& context ) {
         nprotocol_executions_ << " times out of " << ntarget_events_ << ". " <<
         n_locked_out_events_ << " executions of the stimulation protocol were locked out.";
     
-    if ( context.test() ) {
+    if ( context.test() and roundtrip_latency_test_ ) {
         save_source_timestamps_to_disk( nprotocol_executions_ );
     } 
     

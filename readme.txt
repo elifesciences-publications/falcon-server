@@ -17,12 +17,26 @@ CMAKE
 sudo apt-get install cmake
 
 
+GSL libraries
+------------------
+sudo apt-get install libgsl0ldbl
+sudo apt-get install libgsl0-dev
+
+
+Z-lib (needed by cnpy)
+------------------------
+sudo apt-get install zlib1g
+sudo apt-get install zlib1g-dev
+
+
 External libraries included in source tree
 ------------------------------------------
 g3log
 cppzmq (header only library)
 cmdline (header only library)
 disruptor
+cnpy
+yaml-cpp
 
 
 External libraries not included in source tree

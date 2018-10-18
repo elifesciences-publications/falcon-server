@@ -3,7 +3,7 @@ processors:
         class: EventSource
         options:
             events: [open_loop_stim]
-            rate: 1.0
+            rate: 10.0
 
     sink:
         class: DigitalOutput

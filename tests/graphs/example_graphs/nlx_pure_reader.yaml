@@ -1,0 +1,16 @@
+processors:
+    source:
+        class: NlxPureReader
+        options:
+            batch_size: 10
+            update_interval: 5
+            npackets: 0
+
+    sink:
+        class: FileSerializer
+        options:
+            encoding: binary           # either yaml or binary
+            format: compact          # one of none, full, streamheader, headeronly, compact
+
+connections:
+    - source.udp=sink.data

@@ -1,0 +1,242 @@
+processors:
+    source1:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze//test_spikes/test_spikes_TT_I.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_I.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source2:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_II.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_II.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source3:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_III.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_III.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 3
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source4:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_IV.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_IV.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source5:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_V.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_V.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 3
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source6:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_VI.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_VI.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source7:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_VII.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_VII.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source8:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_VIII.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_VIII.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source9:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_IX.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_IX.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source10:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_X.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_X.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source11:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_XI.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_XI.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 2
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source12:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_XII.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_XII.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source13:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_XIII.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_XIII.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 4
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    source14:
+        class: SpikeStreamer
+        options:
+            path_to_spikes: repo://tests/data/fan_maze/test_spikes/test_spikes_TT_XIV.npy
+            path_to_spike_times: repo://tests/data/fan_maze/test_spikes/test_spike_times_TT_XIV.npy
+            path_to_initial_times: repo://tests/data/fan_maze/test_spikes/bin_starting_times.npy
+            n_channels: 3
+            buffer_size_ms: 1.0
+            streaming_rate:  7000
+
+    neuraldecoder1:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_1_
+
+    neuraldecoder2:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_2_
+    
+    neuraldecoder3:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_3_
+
+    neuraldecoder4:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_4_
+    
+    neuraldecoder5:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_5_
+    
+    neuraldecoder6:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_6_
+    
+    neuraldecoder7:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_7_
+    
+    neuraldecoder8:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_8_
+    
+    neuraldecoder9:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_9_
+    
+    neuraldecoder10:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_10_
+    
+    neuraldecoder11:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_12_
+    
+    neuraldecoder12:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_14_
+    
+    neuraldecoder13:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_15_
+    
+    neuraldecoder14:
+        class: Decoder
+        options:
+            bin_size: 10
+            path_to_initial_model: repo://tests/data/fan_maze/encoding_models/TT_16_
+
+    synchronizer:
+        class: LikelihoodSync
+
+    sink:
+        class: FileSerializer
+        options:
+            encoding: binary       # either yaml or binary
+            format: full          # one of none, full, streamheader, headeronly, compact
+            throttle: false        # whether or not packets should be dropped if we cannot keep up
+
+connections:
+    - source(1-14).spikes=neuraldecoder(1-14).spikes
+    - neuraldecoder(1-14).estimates=s:(0-13).p:estimates.f:synchronizer
+    - synchronizer.estimates=sink.data
+    
+
+
